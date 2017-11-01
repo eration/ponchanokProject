@@ -352,6 +352,11 @@
         var playMode = 0;
         function onPlay(index){
             playMode = index;
+            if (index==3) {
+                hideAns();
+            } else {
+                showAns();
+            }
             onRandom();
         }
         var currentScore = 0;
@@ -382,11 +387,12 @@
             }
         }
         var choice = [];
+        var writeChoice = [];
         function onNextStage(){
             choice = [];
             var question = setMath[currentStage]-1;
             var currentSrc = '';
-            if (playMode == 1) {
+            if (playMode == 1 || playMode == 3) {
                 if (question>=187) {
                     currentSrc = "img/etc/"+vocabulary[question][0]+".jpg";
                 } else if (question>=167) {
@@ -410,6 +416,32 @@
                 }
                 $("#playImg").attr("src",currentSrc);
                 $("#playImg").attr("onclick","");
+                if (playMode == 3) {
+                    writeChoice = [];
+                    var wirteLen = vocabulary[question][0].length;
+                    var writeContent = "";
+                    writeContent = "<input value='' id='write'><a href='#' data-role='button' onclick='writeCheck();'>ตอบ</a>";
+                    $("#writeContent").html(writeContent);
+                    for (var i=0; i < (wirteLen/2).toFixed(0); i++) {
+                        randomWriteChoice(wirteLen);
+                    }
+                    var placeHolder = "";
+                    writeChoice.sort(function(a, b){return a - b});
+                    if (writeChoice.length > 1) {
+                        var currentLen = '';
+                        for (var i=0;i<wirteLen;i++) {
+                            if (i == (writeChoice[0]-1)) {
+                                var position = writeChoice[0]-1;
+                                placeHolder += vocabulary[question][0].charAt(position) + " ";
+                                writeChoice.shift();
+                            } else {
+                                placeHolder += "_ ";
+                            }
+                        }
+                    }
+                    $("#write").attr("placeholder",placeHolder);
+                    $("#playPage").trigger('create');
+                }
             } else {
                 $("#playImg").attr("src","img/sound_icon.png");
                 $("#playImg").attr("onclick","responsiveVoice.speak('"+vocabulary[question][0]+"');");
@@ -436,6 +468,20 @@
                 $("#ans"+choice[3]).html(vocabulary[question+1][0]);
             }
         }
+        function randomWriteChoice(num) {
+            var currentCheck = false;
+            var currentRandom = Math.floor((Math.random() * num) + 1);
+            writeChoice.forEach(function(item,index){
+                if (item==currentRandom) {
+                    currentCheck = true;
+                }
+            });
+            if (currentCheck) {
+                randomChoice(num);
+            } else {
+                writeChoice.push(currentRandom);
+            }
+        }
         function randomChoice(num){
             var currentCheck = false;
             var currentRandom = Math.floor((Math.random() * num) + 1);
@@ -456,6 +502,26 @@
             var question = setMath[currentStage]-1;
             if (vocabulary[question][0] == ans) {
                 currentScore++;
+            } else {
+                alert("คำตอบที่ถูกต้องคือ "+vocabulary[question][0]);
+            }
+            currentStage++;
+            if (currentStage != 20) {
+                onNextStage();
+            } else {
+                $("#showEndScore").html(currentScore + " คะแนน");
+                playSound(soundModel.endGame);
+                $.mobile.changePage("#gameOver");
+            }
+        }
+        function writeCheck(){
+            playSound(soundModel.ans);
+            var ans = $("#write").val();
+            var question = setMath[currentStage]-1;
+            if (vocabulary[question][0] == ans) {
+                currentScore++;
+            } else {
+                alert("คำตอบที่ถูกต้องคือ "+vocabulary[question][0]);
             }
             currentStage++;
             if (currentStage != 20) {
@@ -481,6 +547,16 @@
             soundModel.background.play();
             soundModel.background.loop = true;
         });
+        function showAns(){
+            for(var i=1;i<=4;i++){
+                $("#ans"+i).show();
+            }
+        }
+        function hideAns(){
+            for(var i=1;i<=4;i++){
+                $("#ans"+i).hide();
+            }
+        }
     </script>
     <style>
         #homePage,#selectLearnPage,#showLearnPage,#playPage,#gameOver{
@@ -506,6 +582,7 @@
             <a href="#" data-role="button" onclick="onChangePage('#selectLearnPage')">เริ่มเรียน</a>
             <a href="#" data-role="button" onclick="onPlay(1);">ดูและเลือก</a>
             <a href="#" data-role="button" onclick="onPlay(2);">ฟังและเลือก</a>
+            <a href="#" data-role="button" onclick="onPlay(3);">ดูและตอบ</a>
             <br><br>
             <center>
                 <div class="ui-grid-a whiteTranparent">
@@ -579,6 +656,7 @@
                 <a href="#" id="ans2" data-role="button" onclick="checkAns(this);"></a>
                 <a href="#" id="ans3" data-role="button" onclick="checkAns(this);"></a>
                 <a href="#" id="ans4" data-role="button" onclick="checkAns(this);"></a>
+                <div id="writeContent"></div>
             </center>
         </div>
     </div>
@@ -595,7 +673,7 @@
                     <label id="showEndScore"></label>
                 </div>
                 <br><br>
-                <a href="#" data-role="button" onclick="onRandom();">เล่นอีกครั้ง</a>
+                <a href="#" data-role="button" onclick="onRandom();" >เล่นอีกครั้ง</a>
                 <a href="#" data-role="button" onclick="onChangePage('#homePage')">กลับหน้าแรก</a>
             </center>
         </div>
