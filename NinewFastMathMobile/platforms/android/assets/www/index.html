@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <link rel="stylesheet" type="text/css" href="jqm/jquery.mobile.flatui.css" />
+    <title>Math</title>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="jqm/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="jqm/jquery.mobile-1.4.5.min.js"></script>
+    <script>
+        var db;
+        var soundModel = {};
+        soundModel.gameOver = new Audio("sound/Game_Over.wav");
+        soundModel.invalid = new Audio("sound/Invalid.wav");
+        soundModel.slideClick = new Audio("sound/slide_click.mp3");
+        soundModel.valid = new Audio("sound/Valid.wav");
+        soundModel.backgound = new Audio("sound/backgroundSound.mp3");
+        var fastMathModel = {};
+        fastMathModel.isPlaySound = true;
+        fastMathModel.game = "";
+        fastMathModel.mode = "";
+        
+        $(function(){
+            db = window.openDatabase("HighScoreDB","1.0","High Score",1024 * 1024);
+            db.transaction(function(tx){
+//                tx.executeSql("DROP TABLE IF EXISTS HIGH_SCORE");
+            var sql = "CREATE TABLE IF NOT EXISTS HIGH_SCORE ("+
+                "HIGHSCORE_ID INTEGER PRIMARY KEY,"+
+                "SCORE INTEGER,"+
+                "MODE INTEGER)";
+            tx.executeSql(sql);
+            },onError,onSuccess);
+            soundModel.backgound.play();
+            soundModel.backgound.loop = true;
+        });
+
+        function onSuccess(){
+//            alert("Query Success");
+        }
+
+        function onError(){
+            alert("Query Error");
+        }
+        
+        function onChangePage(page){
+            $.mobile.changePage(page);
+            playSound(soundModel.slideClick);
+        }
+        
+        function playSound(sound){
+            if (fastMathModel.isPlaySound)
+                sound.play();
+        }
+        
+        function changePlaySound(){
+            if (soundModel.backgound.muted) {
+                soundModel.backgound.muted = false;
+            } else {
+                soundModel.backgound.muted = true;
+            }
+            
+        }
+        
+        function changePlayEffect(){
+            fastMathModel.isPlaySound = !fastMathModel.isPlaySound;
+        }
+        
+        function selectGame(game){
+            fastMathModel.game = game;
+            onChangePage("#modePage");
+        }
+        
+        function selectMode(mode){
+            fastMathModel.mode = mode;
+        }
+    </script>
+</head>
+
+<body>
+<!--    mainPage-->
+    <div data-role="page" id="homePage" data-theme="g">
+        <div data-role="header">
+            <h3>คณิตคิดเร็ว</h3>
+        </div>
+        <div data-role="content">
+            <br><br><br><br><br><br>
+            <a href="#" data-role="button" id="btnMode1" onclick="selectGame('mode1')">Mode 1</a>
+            <br>
+            <a href="#" data-role="button" id="btnMode2" onclick="selectGame('mode2')">Mode 2</a>
+            <br>
+            <a href="#" data-role="button" id="btnStat" onclick="showStat();">Statistic</a>
+            <br>
+            <center>
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                        <label>Music</label>
+                        <input type="checkbox" data-role="flipswitch" name="musicSwitch" id="musicSwitch" data-theme="d" onchange="changePlaySound();" checked>
+                    </div>
+                    <div class="ui-block-b">
+                        <label>Effect</label>
+                        <input type="checkbox" data-role="flipswitch" name="effectSwitch" id="effectSwith" data-theme="d" onchange="changePlayEffect();" checked>
+                    </div>
+                </div>
+            </center>
+        </div>
+    </div>
+<!--    modePage-->
+    <div data-role="page" id="modePage" data-theme="g">
+        <div data-role="header">
+            <h3>Mode</h3>
+        </div>
+        <div data-role="content">
+            <br><br><br><br>
+            <a href="#" data-role="button" id="btnEasy">ง่าย</a>
+            <a href="#" data-role="button" id="btnNormal">ปานกลาง</a>
+            <a href="#" data-role="button" id="btnHard">ยาก</a>
+        </div>
+        <div data-role="footer" data-position="fixed">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#" data-role="button" id="btnBackHome" onclick="onChangePage('#homePage')">Back</a></li>
+                </ul>
+            </div>
+        </div> 
+    </div>
+<!--    playPage-->
+    <div data-role="page" id="playPage" data-theme="g">
+        <div data-role="content">
+            <div class="ui-grid-a">
+                <div class="ui-block-a">
+                    <center><label id="showTime"></label></center>
+                </div>
+                <div class="ui-block-b">
+                    <center><label id="showScore"></label></center>
+                </div>
+            </div>
+            <br>
+            <div class="ui-grid-d">
+                <div class="ui-block-a">
+                    <label class="grey" id="quest1"></label>
+                </div>
+                <div class="ui-block-b">
+                    <label class="grey" id="quest2"></label>
+                </div>
+                <div class="ui-block-c">
+                    <label class="grey" id="quest3"></label>
+                </div>
+                <div class="ui-block-d">
+                    <label class="grey" id="quest4"></label>
+                </div>
+                <div class="ui-block-e">
+                    <label class="grey" id="quest5"></label>
+                </div>
+            </div>
+            <br>
+            <a href="#" data-role="button" id="ans1"></a>
+            <a href="#" data-role="button" id="ans2"></a>
+            <a href="#" data-role="button" id="ans3"></a>
+            <a href="#" data-role="button" id="ans4"></a>
+        </div>
+    </div>
+<!--
+    <div data-role="page">
+        <div data-role="header">
+            <h3></h3>
+        </div>
+        <div data-role="content">
+        
+        </div>
+        <div data-role="footer" data-position="fixed">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#" data-role="button"></a></li>
+                </ul>
+            </div>
+        </div> 
+    </div>
+-->
+</body>
+
+</html>
