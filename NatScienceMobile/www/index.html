@@ -191,9 +191,11 @@
             currentState++;
             if (currentState < currentObject.length) {
                 newQuestion();
+                onSound(clickSound);
             } else {
                 clearInterval(timeInter);
                 setEndScore();
+                onSound(endSound);
                 onChangePage('#gameOverPage');
             }
         }
@@ -204,7 +206,27 @@
         
         function onChangePage(page){
             $.mobile.changePage(page);
+            onSound(clickSound);
         }
+        var clickSound = new Audio('sound/click.mp3');
+        var background = new Audio('sound/background.mp3');
+        var endSound = new Audio('sound/end.wav');
+        var playSound = true;
+        function onSound (sound) {
+            if (playSound) {
+                sound.play();
+            }
+        }
+        function changePlaySound(sound){
+            background.muted = !background.muted;
+        }
+        function changePlayEffect(){
+            playSound = !playSound;
+        }
+        $(function(){
+            background.play();
+            background.loop = true;
+        });
     </script>
     <style>
         #homePage,#selectPage,#play,#gameOverPage,#solvePage { 
@@ -227,6 +249,19 @@
         <div data-role="content">
             <br><br><br><br><br><br><br><br><br><br><br>
             <a data-role="button" href="#" onclick="onChangePage('#selectPage');">Play Game</a>
+            <br><br>
+            <center>
+                <div class="ui-grid-a whiteTranparent">
+                    <div class="ui-block-a">
+                        <label>Music</label>
+                        <input type="checkbox" data-role="flipswitch" name="musicSwitch" id="musicSwitch" data-theme="d" onchange="changePlaySound();" checked>
+                    </div>
+                    <div class="ui-block-b">
+                        <label>Effect</label>
+                        <input type="checkbox" data-role="flipswitch" name="effectSwitch" id="effectSwith" data-theme="d" onchange="changePlayEffect();" checked>
+                    </div>
+                </div>
+            </center>
         </div>
     </div>
 <!--    selectPage-->
