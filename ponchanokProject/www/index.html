@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <link rel="stylesheet" type="text/css" href="jqm/jquery.mobile.flatui.css" />
+    <title>EngLearn</title>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="jqm/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="jqm/jquery.mobile-1.4.5.min.js"></script>
+    <script src='https://code.responsivevoice.org/responsivevoice.js'></script>
+    <script>
+        var soundModel = {};
+        soundModel.background = new Audio("sound/Free-bluegrass-music.mp3");
+        soundModel.changePage = new Audio("sound/change-page-sound.wav");
+        soundModel.ans = new Audio("sound/move.wav");
+        soundModel.endGame = new Audio("sound/win-sound.wav");
+        var db;
+        var row;
+        var isPlay = true;
+        var vocabulary = [
+            ["	A	".trim(),"	เอ	".trim(),"	A	".trim()],
+            ["	B	".trim(),"	บี	".trim(),"	B	".trim()],
+            ["	C	".trim(),"	ซี	".trim(),"	C	".trim()],
+            ["	D	".trim(),"	ดี	".trim(),"	D	".trim()],
+            ["	E	".trim(),"	อี	".trim(),"	E	".trim()],
+            ["	F	".trim(),"	เอฟ	".trim(),"	F	".trim()],
+            ["	G	".trim(),"	จี	".trim(),"	G	".trim()],
+            ["	H	".trim(),"	เอช	".trim(),"	H	".trim()],
+            ["	I	".trim(),"	ไอ	".trim(),"	I	".trim()],
+            ["	J	".trim(),"	เจ	".trim(),"	J	".trim()],
+            ["	K	".trim(),"	เค	".trim(),"	K	".trim()],
+            ["	L	".trim(),"	แอล	".trim(),"	L	".trim()],
+            ["	M	".trim(),"	เอ็ม	".trim(),"	M	".trim()],
+            ["	N	".trim(),"	เอ็น	".trim(),"	N	".trim()],
+            ["	O	".trim(),"	โอ	".trim(),"	O	".trim()],
+            ["	P	".trim(),"	พี	".trim(),"	P	".trim()],
+            ["	Q	".trim(),"	คิว	".trim(),"	Q	".trim()],
+            ["	R	".trim(),"	อาร์	".trim(),"	R	".trim()],
+            ["	S	".trim(),"	เอส	".trim(),"	S	".trim()],
+            ["	T	".trim(),"	ที	".trim(),"	T	".trim()],
+            ["	U	".trim(),"	ยู	".trim(),"	U	".trim()],
+            ["	V	".trim(),"	วี	".trim(),"	V	".trim()],
+            ["	W	".trim(),"	ดับเบิ้ลยู	".trim(),"	W	".trim()],
+            ["	X	".trim(),"	เอ็กซ์	".trim(),"	X	".trim()],
+            ["	Y	".trim(),"	วาย	".trim(),"	Y	".trim()],
+            ["	Z	".trim(),"	ซี หรือ แซท	".trim(),"	Z	".trim()],
+//            0-25 ตัวอักษร
+            ["	Zero	".trim(),"	เซีย'โร	".trim(),"	0	".trim()],
+            ["	One	".trim(),"	วัน	".trim(),"	1	".trim()],
+            ["	Two	".trim(),"	ทู	".trim(),"	2	".trim()],
+            ["	Three	".trim(),"	ธรี	".trim(),"	3	".trim()],
+            ["	Four	".trim(),"	ฟอร์	".trim(),"	4	".trim()],
+            ["	Five	".trim(),"	ไฟฟฺ	".trim(),"	5	".trim()],
+            ["	Six	".trim(),"	ซิคซฺ	".trim(),"	6	".trim()],
+            ["	Seven	".trim(),"	เซฟ'เวิน	".trim(),"	7	".trim()],
+            ["	Eight	".trim(),"	เอท	".trim(),"	8	".trim()],
+            ["	Nine	".trim(),"	ไนนฺ	".trim(),"	9	".trim()],
+            ["	Ten	".trim(),"	เทน	".trim(),"	10	".trim()],
+            ["	Eleven	".trim(),"	อีเลฟ'เวิน	".trim(),"	11	".trim()],
+            ["	Twelve	".trim(),"	ทแวลว	".trim(),"	12	".trim()],
+            ["	Thirteen	".trim(),"	เธอ'ทีน	".trim(),"	13	".trim()],
+            ["	Fourteen	".trim(),"	ฟอร์'ทีน	".trim(),"	14	".trim()],
+            ["	Fifteen	".trim(),"	ฟิฟทีน'	".trim(),"	15	".trim()],
+            ["	Sixteen	".trim(),"	ซิคซฺ'ทีน	".trim(),"	16	".trim()],
+            ["	Seventeen	".trim(),"	เซฟ เวินทีน'	".trim(),"	17	".trim()],
+            ["	Eighteen	".trim(),"	เอท'ทีน	".trim(),"	18	".trim()],
+            ["	Nineteen	".trim(),"	ไนนฺ'ทีน	".trim(),"	19	".trim()],
+            ["	Twenty	".trim(),"	ทเวน'ที	".trim(),"	20	".trim()],
+//            26-46 ตัวเลข
+            ["	Blue	".trim(),"	บลู	".trim(),"	สีน้ำเงิน	".trim()],
+            ["	Red	".trim(),"	เรด	".trim(),"	สีแดง	".trim()],
+            ["	Pink	".trim(),"	พิงค	".trim(),"	สีชมพู	".trim()],
+            ["	Orange	".trim(),"	อ๊อรินจ	".trim(),"	สีส้ม	".trim()],
+            ["	Yellow	".trim(),"	เย็ลโละ	".trim(),"	สีเหลือง	".trim()],
+            ["	Black	".trim(),"	แบล็ค	".trim(),"	สีดำ	".trim()],
+            ["	Green	".trim(),"	กรีน	".trim(),"	สีเขียว	".trim()],
+            ["	Brown	".trim(),"	บราวน	".trim(),"	สีน้ำตาล	".trim()],
+            ["	White	".trim(),"	ไวท	".trim(),"	สีขาว	".trim()],
+            ["	Silver	".trim(),"	ซิลเวอะ	".trim(),"	สีเงิน	".trim()],
+            ["	Golden	".trim(),"	โกลดฺ	".trim(),"	สีทอง	".trim()],
+            ["	Turquoise	".trim(),"	เทอ-คอยส	".trim(),"	สีน้ำเงินอมเขียว	".trim()],
+            ["	Grey	".trim(),"	เกร	".trim(),"	สีเทา	".trim()],
+            ["	Purple	".trim(),"	เพ๊อเพิล	".trim(),"	สีม่วง	".trim()],
+            ["	Cream	".trim(),"	ครีม	".trim(),"	สีครีม	".trim()],
+            ["	Bronze	".trim(),"	บลอนดฺ	".trim(),"	สีบรอนซ์	".trim()],
+            ["	Khaki	".trim(),"	คา'คี	".trim(),"	สีกากี	".trim()],
+            ["	Indigo	".trim(),"	อีน-ดิโก	".trim(),"	สีคราม	".trim()],
+            ["	Light blue	".trim(),"	ไลท-บลู	".trim(),"	สีฟ้าอ่อน	".trim()],
+            ["	Dark Blue	".trim(),"	ดาค-บลู	".trim(),"	สีน้ำเงินเข้ม	".trim()],
+//            47-66 สี
+            ["	Bee	".trim(),"	บี	".trim(),"	ผึ้ง	".trim()],
+            ["	Bear	".trim(),"	แบร์	".trim(),"	หมี	".trim()],
+            ["	Elephant	".trim(),"	อีเรฟเฟ้นท	".trim(),"	ช้าง	".trim()],
+            ["	Tiger	".trim(),"	ไทเกอร์	".trim(),"	เสือ	".trim()],
+            ["	Dog	".trim(),"	ด็อก	".trim(),"	สุนัข	".trim()],
+            ["	Cat	".trim(),"	แค็ท	".trim(),"	แมว	".trim()],
+            ["	Rat	".trim(),"	แร็ท	".trim(),"	หนู	".trim()],
+            ["	Hen	".trim(),"	เฮ็น	".trim(),"	แม่ไก่	".trim()],
+            ["	Duck	".trim(),"	ดั๊ก	".trim(),"	เป็ด	".trim()],
+            ["	Pig	".trim(),"	พิ๊ก	".trim(),"	หมู	".trim()],
+            ["	Camel	".trim(),"	คาเมล	".trim(),"	อูฐ	".trim()],
+            ["	Cow	".trim(),"	คาว	".trim(),"	แม่วัว	".trim()],
+            ["	Deer	".trim(),"	เดีย	".trim(),"	กวาง	".trim()],
+            ["	Monkey	".trim(),"	มังคี้	".trim(),"	ลิง	".trim()],
+            ["	Snack	".trim(),"	ซเนค	".trim(),"	งู	".trim()],
+            ["	Crocodile	".trim(),"	คร็อกคอไดล์	".trim(),"	จระเข้	".trim()],
+            ["	Hippopotamus	".trim(),"	ฮิบโพโพเทมัส	".trim(),"	ฮิปโป	".trim()],
+            ["	Kangaroo	".trim(),"	แกงการู	".trim(),"	จิงโจ้	".trim()],
+            ["	Fish	".trim(),"	ฟิช	".trim(),"	ปลา	".trim()],
+            ["	Crab	".trim(),"	แครป	".trim(),"	ปู	".trim()],
+//            67-86 สัตว์
+            ["	Watermelon	".trim(),"	วอเทอรฺเมลอน	".trim(),"	แตงโม	".trim()],
+            ["	Orange	".trim(),"	ออเรนจฺ	".trim(),"	ส้ม	".trim()],
+            ["	Banana	".trim(),"	แบนานา	".trim(),"	กล้วย	".trim()],
+            ["	Apple	".trim(),"	แอพเพิล	".trim(),"	แอปเปิ้ล	".trim()],
+            ["	Melon	".trim(),"	เมลอน	".trim(),"	เมลอน	".trim()],
+            ["	Papaya	".trim(),"	พาพายา	".trim(),"	มะละกอ	".trim()],
+            ["	Durian	".trim(),"	ดุเรียน	".trim(),"	ทุเรียน	".trim()],
+            ["	Coconut	".trim(),"	โคโคนัท	".trim(),"	มะพร้าว	".trim()],
+            ["	Lychee	".trim(),"	ลีชี	".trim(),"	ลิ้นจี่	".trim()],
+            ["	Pineapple	".trim(),"	ไพนฺแอพเพิล	".trim(),"	สัปะรด	".trim()],
+            ["	Strawberry	".trim(),"	สทรอเบอรี	".trim(),"	สตรอเบอรี่	".trim()],
+            ["	Blueberry	".trim(),"	บลูเบอรี	".trim(),"	บลูเบอรี่	".trim()],
+            ["	Kiwi	".trim(),"	คีวี	".trim(),"	กีวี	".trim()],
+            ["	Mango	".trim(),"	แมงโก	".trim(),"	มะม่วง	".trim()],
+            ["	Cantaloupe	".trim(),"	แคนทะลูป	".trim(),"	แคนตาลูป	".trim()],
+            ["	Grape	".trim(),"	เกรพ	".trim(),"	องุ่น	".trim()],
+            ["	Rambutan	".trim(),"	แรมบูทัน	".trim(),"	เงาะ	".trim()],
+            ["	Longan	".trim(),"	ลองแกน	".trim(),"	ลำไย	".trim()],
+            ["	rose apple	".trim(),"	โรส แอพเพิล	".trim(),"	ชมพู่	".trim()],
+            ["	cherry	".trim(),"	เชอรี	".trim(),"	เชอรี่	".trim()],
+//            87-106 ผลไม้
+            ["	America	".trim(),"	อะเม๊ริคะ	".trim(),"	สหรัฐอเมริกา	".trim()],
+            ["	China	".trim(),"	ไช๊นะ	".trim(),"	จีน	".trim()],
+            ["	England	".trim(),"	อิ๊งเลินด	".trim(),"	อังกฤษ	".trim()],
+            ["	France	".trim(),"	ฟรานซ	".trim(),"	ฝรั่งเศส	".trim()],
+            ["	Italy	".trim(),"	อิ๊ทลิ	".trim(),"	อิตาลี	".trim()],
+            ["	Japan	".trim(),"	เจอะแพ๊น	".trim(),"	ญี่ปุ่น	".trim()],
+            ["	Korea	".trim(),"	คอเรี๊ย	".trim(),"	เกาหลี	".trim()],
+            ["	Laos	".trim(),"	ลาวส	".trim(),"	ลาว	".trim()],
+            ["	Malaysia	".trim(),"	เมอะเล๊เชอะ	".trim(),"	มาเลเซีย	".trim()],
+            ["	Singapore	".trim(),"	ซิ๊งกะพอ	".trim(),"	สิงคโปร์	".trim()],
+            ["	Thailand	".trim(),"	ไท๊แลนดึ	".trim(),"	ไทย	".trim()],
+            ["	Spain	".trim(),"	สเปน	".trim(),"	สเปน	".trim()],
+            ["	Philippines	".trim(),"	ฟิ๊ลิพพีนส	".trim(),"	ฟิลิปปินส์	".trim()],
+            ["	Australia	".trim(),"	อ๊อสเตรเลีย	".trim(),"	ออสเตรเลีย	".trim()],
+            ["	Canada	".trim(),"	แค๊นะดะ	".trim(),"	แคนาดา	".trim()],
+            ["	India	".trim(),"	อิ์นเดีย	".trim(),"	อินเดีย	".trim()],
+            ["	Germany	".trim(),"	เจอรมันนี	".trim(),"	เยอรมันนี	".trim()],
+            ["	Russia	".trim(),"	รัสเซีย	".trim(),"	รัสเซีย	".trim()],
+            ["	Vietnam	".trim(),"	เวียดน๊าม	".trim(),"	เวียดนาม	".trim()],
+            ["	New Zealand	".trim(),"	นิวซี๊เลินด	".trim(),"	นิวซีแลนด์	".trim()],
+//            107-126 ธงชาติ
+            ["	Jasmine	".trim(),"	จัสมิน	".trim(),"	ดอกมะลิ	".trim()],
+            ["	Lotus	".trim(),"	โลตัส	".trim(),"	ดอกบัว	".trim()],
+            ["	Rose	".trim(),"	โรส	".trim(),"	ดอกกุหลาบ	".trim()],
+            ["	Sunflower	".trim(),"	ซันฟลาวเวอร์	".trim(),"	ดอกทานตะวัน	".trim()],
+            ["	Tulip	".trim(),"	ทิวลิบ	".trim(),"	ดอกทิวลิบ	".trim()],
+            ["	Bougaville	".trim(),"	บูเกฟวิลล	".trim(),"	ดอกเฟื่องฟ้า	".trim()],
+            ["	Butterfly pea	".trim(),"	บัทเตอร์ฟลาย พี	".trim(),"	ดอกอัญชัน	".trim()],
+            ["	Canna Lily	".trim(),"	แคนนา ลิลี่	".trim(),"	ดอกพุทธรักษา	".trim()],
+            ["	Cape Jasmine	".trim(),"	เคป จัสมิน	".trim(),"	ดอกพุดซ้อน	".trim()],
+            ["	Chrysanthemum	".trim(),"	คริสเซนทีมัม	".trim(),"	เบ็ญจมาศ	".trim()],
+            ["	Desert rose	".trim(),"	เดทเสิท โรส	".trim(),"	ดอกลั่นทม	".trim()],
+            ["	Four o clock	".trim(),"	โฟ โอคล๊อค	".trim(),"	ดอกบานเย็น	".trim()],
+            ["	Globe Amaranth	".trim(),"	โกล๊บ แอมมาแรน	".trim(),"	ดอกบานไม่รู้โรย	".trim()],
+            ["	ilang-ilang	".trim(),"	อิแลง อิแลง	".trim(),"	กระดังงา	".trim()],
+            ["	Night jasmine	".trim(),"	ไนท์ จัสมิน	".trim(),"	ดอกราตรี	".trim()],
+            ["	Orange jasmine	".trim(),"	ออเร๊นจ จัสมิน	".trim(),"	ดอกแก้ว	".trim()],
+            ["	Orchid	".trim(),"	ออขิด	".trim(),"	ดอกกล้วยไม้	".trim()],
+            ["	Chinese rose	".trim(),"	ไชนีส โรส	".trim(),"	ชบา	".trim()],
+            ["	Padauk	".trim(),"	ประดู่ก	".trim(),"	ดอกประดู่	".trim()],
+            ["	Sesban	".trim(),"	ซีสบัน	".trim(),"	ดอกแค	".trim()],
+//            127-146 ดอกไม้
+            ["	Airplane	".trim(),"	แอ๊เพลน	".trim(),"	เครื่องบิน	".trim()],
+            ["	Ambulance	".trim(),"	แอ๊มบิวเลินซ	".trim(),"	รถพยาบาล	".trim()],
+            ["	Bicycle	".trim(),"	ไบ๊ซิเคิล	".trim(),"	รถจักรยาน	".trim()],
+            ["	Boat	".trim(),"	โบ๊ท	".trim(),"	เรือพาย	".trim()],
+            ["	Bus	".trim(),"	บัส	".trim(),"	รถบัส	".trim()],
+            ["	Car	".trim(),"	คาร์	".trim(),"	รถยนต์	".trim()],
+            ["	Helicopter	".trim(),"	เฮ๊ลิค็อพเทอะ	".trim(),"	เฮลิคอปเตอร์	".trim()],
+            ["	Motorcycle	".trim(),"	โมเทอะไซ๊เคิล	".trim(),"	จักรยานยนต์	".trim()],
+            ["	Ship	".trim(),"	ชิพ	".trim(),"	เรือใหญ่	".trim()],
+            ["	Taxi	".trim(),"	แท็กซิ	".trim(),"	แท็กซี่	".trim()],
+            ["	Train	".trim(),"	เทรน	".trim(),"	รถไฟ	".trim()],
+            ["	Truck	".trim(),"	ทรัค	".trim(),"	รถบรรทุก	".trim()],
+            ["	Van	".trim(),"	แวน	".trim(),"	รถตู้	".trim()],
+            ["	racing car	".trim(),"	เรซซิง คาร์	".trim(),"	รถแข่ง	".trim()],
+            ["	School bus	".trim(),"	สคูล บัส	".trim(),"	รถโรงเรียน	".trim()],
+            ["	Tank	".trim(),"	แทงค์	".trim(),"	รถถัง	".trim()],
+            ["	Tuk tuk	".trim(),"	ทุค ทุค	".trim(),"	รถตุ๊กตุ๊ก	".trim()],
+            ["	fire engine	".trim(),"	ไฟเออร์ เอนจิน	".trim(),"	รถดับเพลิง	".trim()],
+            ["	Police car	".trim(),"	โพลีซ คาร์	".trim(),"	รถตำรวจ	".trim()],
+            ["	Sailboat	".trim(),"	เซลโบท	".trim(),"	เรือใบ	".trim()],
+//            147-166 ยานพาหนะ
+            ["	fried egg	".trim(),"	ฟรายด์ เอ้ก	".trim(),"	ไข่ดาว	".trim()],
+            ["	bacon	".trim(),"	เบคอน	".trim(),"	เบคอน	".trim()],
+            ["	sausage	".trim(),"	ซอ-ซิจ	".trim(),"	ไส้กรอก	".trim()],
+            ["	omelette	".trim(),"	ออม-เล็ท	".trim(),"	ไข่เจียว	".trim()],
+            ["	bread	".trim(),"	เบรด	".trim(),"	ขนมปัง	".trim()],
+            ["	toast	".trim(),"	โทสทฺ	".trim(),"	ขนมปังปิ้ง	".trim()],
+            ["	macaroni	".trim(),"	แมคคะโร'นี	".trim(),"	มักกะโรนี	".trim()],
+            ["	sandwich	".trim(),"	แซนด์วิช	".trim(),"	ขนมปังแซนด์วิช	".trim()],
+            ["	pizza	".trim(),"	พิซซ่า	".trim(),"	พิซซ่า	".trim()],
+            ["	hamburger	".trim(),"	แฮม'เบอเกอะ	".trim(),"	แฮมเบอร์เกอร์	".trim()],
+            ["	steak	".trim(),"	สเทค	".trim(),"	เนื้อสเต็ก	".trim()],
+            ["	French fries	".trim(),"	เฟรนช์ฟรายส์	".trim(),"	มันฝรั่งทอด	".trim()],
+            ["	Salad	".trim(),"	แซล-แอ็ด	".trim(),"	สลัดผัก	".trim()],
+            ["	Spaghetti	".trim(),"	ซพะเกท-ทิ	".trim(),"	สปาเก็ตตี้	".trim()],
+            ["	Barbecue	".trim(),"	บา-บิคยู	".trim(),"	บาร์บีคิว	".trim()],
+            ["	Curry	".trim(),"	เคอ-ริ	".trim(),"	แกงกะหรี่	".trim()],
+            ["	Soup	".trim(),"	ซูพ	".trim(),"	น้ำซุป	".trim()],
+            ["	Noodle	".trim(),"	นู๊ดเดิ้ล	".trim(),"	ก๋วยเตี๋ยว	".trim()],
+            ["	fried chicken	".trim(),"	ฟรายด์	".trim(),"	ชิกเก้นไก่ทอด	".trim()],
+            ["	fried rice	".trim(),"	ฟรายด์ ไร้ท	".trim(),"	ข้าวผัด	".trim()],
+//            167-186 อาหาร
+            ["	book	".trim(),"	บุค	".trim(),"	หนังสือ	".trim()],
+            ["	eraser	".trim(),"	อิเรซ-เออะ	".trim(),"	ยางลบ	".trim()],
+            ["	pen	".trim(),"	เพ็นซ์	".trim(),"	ปากกา	".trim()],
+            ["	pencil	".trim(),"	เพ็นซิ่ว	".trim(),"	ดินสอ	".trim()],
+            ["	ruler	".trim(),"	รูเลอร์	".trim(),"	ไม้บรรทัด	".trim()],
+            ["	Powder	".trim(),"	พาวเดอร์	".trim(),"	แป้ง	".trim()],
+            ["	Scissors	".trim(),"	ซีซ-เอิส	".trim(),"	กรรไกร	".trim()],
+            ["	Comb	".trim(),"	โคม	".trim(),"	หวี	".trim()],
+            ["	Bag	".trim(),"	แบ็ก	".trim(),"	กระเป๋า	".trim()],
+            ["	Nail clipper	".trim(),"	เน็ล คลิปเปอร์	".trim(),"	ที่ตัดเล็บ	".trim()],
+            ["	Shampoo	".trim(),"	แชมพู	".trim(),"	ยาสระผม	".trim()],
+            ["	Conditioner	".trim(),"	คอนดิชันเนอร์	".trim(),"	ครีมนวดผม	".trim()],
+            ["	Toothpaste	".trim(),"	ทูช-เพช	".trim(),"	ยาสีฟัน	".trim()],
+            ["	Toothbrush	".trim(),"	ทูช-บรัช	".trim(),"	แปรงสีฟัน	".trim()],
+            ["	Bath towel	".trim(),"	แบทช์-เทาเอ็ล	".trim(),"	ผ้าเช็ดตัว	".trim()],
+            ["	Bed	".trim(),"	เบท	".trim(),"	เตียงนอน	".trim()],
+            ["	Chair	".trim(),"	แชร์	".trim(),"	เก้าอี้	".trim()],
+            ["	Mirror	".trim(),"	มิลเรอร์	".trim(),"	กระจก	".trim()],
+            ["	Sofa	".trim(),"	โซฟา	".trim(),"	โซฟา	".trim()],
+            ["	Bin	".trim(),"	บิน	".trim(),"	ถังขยะ	".trim()]
+//            187-206 อุปกรณ์
+        ];
+        
+        function onChangePage(page){
+            playSound(soundModel.changePage);
+            $.mobile.changePage(page);
+        }
+        
+        function onSelectLearn(index){
+            var content = "";
+            if (index == 1) {
+                $("#showLearnTitle").html("ของใช้");
+                for (var i=187;i<=206;i++) {
+                    content += "<center class='whiteTranparent'>";
+                    content += "<img style='width:50%;' onclick='responsiveVoice.speak(\""+vocabulary[i][0]+"\");' src='img/etc/"+vocabulary[i][0]+".jpg'>";
+                    content += "<p>"+vocabulary[i][0]+"</p>";
+                    content += "<p>"+vocabulary[i][1]+"</p>";
+                    content += "<p>"+vocabulary[i][2]+"</p>";
+                    content += "</center>";
+                }
+            } else if (index == 10) {
+                $("#showLearnTitle").html("อาหาร");
+                for (var i=167;i<=186;i++) {
+                    content += "<center class='whiteTranparent'>";
+                    content += "<img style='width:50%;' onclick='responsiveVoice.speak(\""+vocabulary[i][0]+"\");' src='img/food/"+vocabulary[i][0]+".jpg'>";
+                    content += "<p>"+vocabulary[i][0]+"</p>";
+                    content += "<p>"+vocabulary[i][1]+"</p>";
+                    content += "<p>"+vocabulary[i][2]+"</p>";
+                    content += "</center>";
+                }
+            } else if (index == 7) {
+                $("#showLearnTitle").html("ยานพาหนะ");
+                for (var i=147;i<=166;i++) {
+                    content += "<center class='whiteTranparent'>";
+                    content += "<img style='width:50%;' onclick='responsiveVoice.speak(\""+vocabulary[i][0]+"\");' src='img/vehicle/"+vocabulary[i][0]+".jpg'>";
+                    content += "<p>"+vocabulary[i][0]+"</p>";
+                    content += "<p>"+vocabulary[i][1]+"</p>";
+                    content += "<p>"+vocabulary[i][2]+"</p>";
+                    content += "</center>";
+                }
+            } else if (index == 2) {
+                $("#showLearnTitle").html("ดอกไม้");
+                for (var i=127;i<=146;i++) {
+                    content += "<center class='whiteTranparent'>";
+                    content += "<img style='width:50%;' onclick='responsiveVoice.speak(\""+vocabulary[i][0]+"\");' src='img/flower/"+vocabulary[i][0]+".jpg'>";
+                    content += "<p>"+vocabulary[i][0]+"</p>";
+                    content += "<p>"+vocabulary[i][1]+"</p>";
+                    content += "<p>"+vocabulary[i][2]+"</p>";
+                    content += "</center>";
+                }
+            } else if (index == 5) {
+                $("#showLearnTitle").html("ธงชาติ");
+                for (var i=107;i<=126;i++) {
+                    content += "<center class='whiteTranparent'>";
+                    content += "<img style='width:50%;' onclick='responsiveVoice.speak(\""+vocabulary[i][0]+"\");' src='img/flag/"+vocabulary[i][0]+".jpg'>";
+                    content += "<p>"+vocabulary[i][0]+"</p>";
+                    content += "<p>"+vocabulary[i][1]+"</p>";
+                    content += "<p>"+vocabulary[i][2]+"</p>";
+                    content += "</center>";
+                }
+            } else if (index == 6) {
+                $("#showLearnTitle").html("ผลไม้");
+                for (var i=87;i<=106;i++) {
+                    content += "<center class='whiteTranparent'>";
+                    content += "<img style='width:50%;' onclick='responsiveVoice.speak(\""+vocabulary[i][0]+"\");' src='img/fruit/"+vocabulary[i][0]+".jpg'>";
+                    content += "<p>"+vocabulary[i][0]+"</p>";
+                    content += "<p>"+vocabulary[i][1]+"</p>";
+                    content += "<p>"+vocabulary[i][2]+"</p>";
+                    content += "</center>";
+                }
+            } else if (index == 8) {
+                $("#showLearnTitle").html("สัตว์");
+                for (var i=67;i<=86;i++) {
+                    content += "<center class='whiteTranparent'>";
+                    content += "<img style='width:50%;' onclick='responsiveVoice.speak(\""+vocabulary[i][0]+"\");' src='img/animal/"+vocabulary[i][0]+".jpg'>";
+                    content += "<p>"+vocabulary[i][0]+"</p>";
+                    content += "<p>"+vocabulary[i][1]+"</p>";
+                    content += "<p>"+vocabulary[i][2]+"</p>";
+                    content += "</center>";
+                }
+            } else if (index == 9) {
+                $("#showLearnTitle").html("สีต่างๆ");
+                for (var i=47;i<=66;i++) {
+                    content += "<center class='whiteTranparent'>";
+                    content += "<img style='width:50%;' onclick='responsiveVoice.speak(\""+vocabulary[i][0]+"\");' src='img/color/"+vocabulary[i][0]+".jpg'>";
+                    content += "<p>"+vocabulary[i][0]+"</p>";
+                    content += "<p>"+vocabulary[i][1]+"</p>";
+                    content += "<p>"+vocabulary[i][2]+"</p>";
+                    content += "</center>";
+                }
+            } else if (index == 3) {
+                $("#showLearnTitle").html("ตัวเลข");
+                for (var i=26;i<=46;i++) {
+                    content += "<center class='whiteTranparent'>";
+                    content += "<img style='width:50%;' onclick='responsiveVoice.speak(\""+vocabulary[i][0]+"\");' src='img/number/"+vocabulary[i][2]+".png'>";
+                    content += "<p>"+vocabulary[i][0]+"</p>";
+                    content += "<p>"+vocabulary[i][1]+"</p>";
+                    content += "<p>"+vocabulary[i][2]+"</p>";
+                    content += "</center>";
+                }
+            } else if (index == 4) {
+                $("#showLearnTitle").html("ตัวอักษร");
+                for (var i=0;i<=25;i++) {
+                    content += "<center class='whiteTranparent'>";
+                    content += "<img style='width:50%;' onclick='responsiveVoice.speak(\""+vocabulary[i][0]+"\");' src='img/character/"+vocabulary[i][0]+".png'>";
+                    content += "<p>"+vocabulary[i][0]+"</p>";
+                    content += "<p>"+vocabulary[i][1]+"</p>";
+                    content += "</center>";
+                }
+            }
+            $("#showLearnContent").html(content);
+            onChangePage("#showLearnPage");
+        }
+        var playMode = 0;
+        function onPlay(index){
+            playMode = index;
+            if (index==3) {
+                hideAns();
+            } else {
+                showAns();
+            }
+//            onRandom();
+            onChangePage('#selectPlayPage');
+        }
+        var selectPlay = 0;
+        var series = [
+            [
+               [
+                   20,49,50,100,200,10,2,5,29,30
+               ] , [
+                   10,20,30,40,50,60,70,80,90,100
+               ] , [
+                   110,120,130,140,150,160,170,180,190,200
+               ] , [
+                   1,11,21,31,41,51,61,71,81,91,111
+               ] , [
+                   2,12,22,32,42,52,62,72,82,92,102
+               ]
+            ],[
+                [
+                    127 ,145 ,150 ,144 ,40 ,63 ,79 ,46 ,32 ,171
+                ],[
+                    167 ,108 ,68 ,51 ,156 ,41 ,5 ,74 ,96 ,83 
+                ],[
+                    120 ,143 ,189 ,99 ,25 ,118 ,155 ,153 ,24 ,135
+                ],[
+                    53 ,19 ,50 ,153 ,146 ,121 ,102 ,100 ,73 ,28
+                ],[
+                    186 ,118 ,43 ,95 ,26 ,178 ,3 ,52 ,11 ,187
+                ]
+            ],[
+                [
+                    128 ,149 ,108 ,134 ,161 ,136 ,65 ,52 ,84 ,160 
+                ],[
+                    62 ,8 ,121 ,161 ,80 ,196 ,144 ,126 ,1 ,23
+                ],[
+                    200 ,91 ,112 ,82 ,141 ,111 ,4 ,135 ,143 ,8
+                ],[
+                    170 ,145 ,7 ,17 ,156 ,73 ,126 ,106 ,185 ,160
+                ],[
+                    90 ,58 ,197 ,118 ,108 ,83 ,34 ,148 ,193 ,96
+                ]
+            ]
+        ];
+        function onSelectPlay(index){
+            selectPlay = index;
+            onRandom();
+        }
+        var currentScore = 0;
+        var currentStage = 0;
+        function onRandom(){
+            setMath = [];
+            currentScore = 0;
+//            for (var i=0; i<20; i++) {
+//                randomMath(207);
+//            }
+            currentStage = 0;
+            setMath = series[playMode-1][selectPlay-1];
+            onNextStage();
+            onChangePage("#playPage");
+        }
+        var setMath = [];
+        function randomMath(num){
+            var currentCheck = false;
+            var currentRandom = Math.floor((Math.random() * num) + 1);
+            setMath.forEach(function(item,index){
+                if (item==currentRandom) {
+                    currentCheck = true;
+                }
+            });
+            if (currentCheck) {
+                randomMath(num);
+            } else {
+                setMath.push(currentRandom);
+            }
+        }
+        var choice = [];
+        var writeChoice = [];
+        function onNextStage(){
+            choice = [];
+            var question = setMath[currentStage]-1;
+            var currentSrc = '';
+            if (playMode == 1 || playMode == 3) {
+                if (question>=187) {
+                    currentSrc = "img/etc/"+vocabulary[question][0]+".jpg";
+                } else if (question>=167) {
+                    currentSrc = "img/food/"+vocabulary[question][0]+".jpg";
+                } else if (question>=147) {
+                    currentSrc = "img/vehicle/"+vocabulary[question][0]+".jpg";
+                } else if (question>=127) {
+                    currentSrc = "img/flower/"+vocabulary[question][0]+".jpg";
+                } else if (question>=107) {
+                    currentSrc = "img/flag/"+vocabulary[question][0]+".jpg";
+                } else if (question>=87) {
+                    currentSrc = "img/fruit/"+vocabulary[question][0]+".jpg";
+                } else if (question>=67) {
+                    currentSrc = "img/animal/"+vocabulary[question][0]+".jpg";       
+                } else if (question>=47) {
+                    currentSrc = "img/color/"+vocabulary[question][0]+".jpg";       
+                } else if (question>=26) {
+                    currentSrc = "img/number/"+vocabulary[question][2]+".png";      
+                } else if (question>=0) {
+                    currentSrc = "img/character/"+vocabulary[question][0]+".png";       
+                }
+                $("#playImg").attr("src",currentSrc);
+                $("#playImg").attr("onclick","");
+                if (playMode == 3) {
+                    writeChoice = [];
+                    var wirteLen = vocabulary[question][0].length;
+                    var writeContent = "";
+                    writeContent = "<input value='' id='write' disabled><input value='' id='write1'><a href='#' data-role='button' onclick='writeCheck();'>ตอบ</a>";
+                    $("#writeContent").html(writeContent);
+                    for (var i=0; i < (wirteLen/2).toFixed(0); i++) {
+                        randomWriteChoice(wirteLen);
+                    }
+                    var placeHolder = "";
+                    writeChoice.sort(function(a, b){return a - b});
+                    if (writeChoice.length > 1) {
+                        var currentLen = '';
+                        for (var i=0;i<wirteLen;i++) {
+                            if (i == (writeChoice[0]-1)) {
+                                var position = writeChoice[0]-1;
+                                placeHolder += vocabulary[question][0].charAt(position) + " ";
+                                writeChoice.shift();
+                            } else {
+                                placeHolder += "_ ";
+                            }
+                        }
+                    }
+                    $("#write").attr("placeholder",placeHolder);
+                    $("#playPage").trigger('create');
+                }
+            } else {
+                $("#playImg").attr("src","img/sound_icon.png");
+                $("#playImg").attr("onclick","responsiveVoice.speak('"+vocabulary[question][0]+"');");
+            }
+            for (var i = 0;i<4;i++) {
+                randomChoice(4);
+            }
+            $("#ans"+choice[0]).html(vocabulary[question][0]);
+            if (question == 206) {
+                $("#ans"+choice[1]).html(vocabulary[question-1][0]);
+                $("#ans"+choice[2]).html(vocabulary[question-2][0]);
+                $("#ans"+choice[3]).html(vocabulary[question-3][0]);
+            } else if (question == 205) {
+                $("#ans"+choice[1]).html(vocabulary[question+1][0]);
+                $("#ans"+choice[2]).html(vocabulary[question-1][0]);
+                $("#ans"+choice[3]).html(vocabulary[question-2][0]);
+            } else if (question == 204) {
+                $("#ans"+choice[1]).html(vocabulary[question+2][0]);
+                $("#ans"+choice[2]).html(vocabulary[question+1][0]);
+                $("#ans"+choice[3]).html(vocabulary[question-1][0]);
+            } else {
+                $("#ans"+choice[1]).html(vocabulary[question+3][0]);
+                $("#ans"+choice[2]).html(vocabulary[question+2][0]);
+                $("#ans"+choice[3]).html(vocabulary[question+1][0]);
+            }
+        }
+        function randomWriteChoice(num) {
+            var currentCheck = false;
+            var currentRandom = Math.floor((Math.random() * num) + 1);
+            writeChoice.forEach(function(item,index){
+                if (item==currentRandom) {
+                    currentCheck = true;
+                }
+            });
+            if (currentCheck) {
+                randomChoice(num);
+            } else {
+                writeChoice.push(currentRandom);
+            }
+        }
+        function randomChoice(num){
+            var currentCheck = false;
+            var currentRandom = Math.floor((Math.random() * num) + 1);
+            choice.forEach(function(item,index){
+                if (item==currentRandom) {
+                    currentCheck = true;
+                }
+            });
+            if (currentCheck) {
+                randomChoice(num);
+            } else {
+                choice.push(currentRandom);
+            }
+        }
+        function checkAns(item) {
+            playSound(soundModel.ans);
+            var ans = $(item).html();
+            var question = setMath[currentStage]-1;
+            if (vocabulary[question][0] == ans) {
+                currentScore++;
+            } else {
+                alert("คำตอบที่ถูกต้องคือ "+vocabulary[question][0]);
+            }
+            currentStage++;
+            if (currentStage != setMath.length) {
+                onNextStage();
+            } else {
+                $("#showEndScore").html(currentScore + " คะแนน");
+                playSound(soundModel.endGame);
+                $.mobile.changePage("#gameOver");
+            }
+        }
+        function writeCheck(){
+            playSound(soundModel.ans);
+            var ans = $("#write1").val();
+            ans = ans.toLowerCase();
+            var question = setMath[currentStage]-1;
+            if (vocabulary[question][0].toLowerCase() == ans) {
+                currentScore++;
+            } else {
+                alert("คำตอบที่ถูกต้องคือ "+vocabulary[question][0]);
+            }
+            currentStage++;
+            if (currentStage != 20) {
+                onNextStage();
+            } else {
+                $("#showEndScore").html(currentScore + " คะแนน");
+                playSound(soundModel.endGame);
+                $.mobile.changePage("#gameOver");
+            }
+        }
+        function playSound(sound){
+            if (isPlay) {
+                sound.play();
+            }
+        }
+        function muteBackground(){
+            soundModel.background.muted = !soundModel.background.muted;
+        }
+        function closeSound(){
+            isPlay = !isPlay;
+        }
+        $(function(){
+            soundModel.background.play();
+            soundModel.background.loop = true;
+            db = window.openDatabase("HighScoreDB","1.0","Score",1024 * 1024);
+            db.transaction(onCreateTable,function(){
+                alert("Table Error");
+            },function(){
+//                alert("Create Success");
+            });
+        });
+        function onCreateTable(tx){
+//            tx.executeSql("DROP TABLE IF EXISTS HIGH_SCORE");
+            var sql = "CREATE TABLE IF NOT EXISTS HIGH_SCORE(" +
+                "ID INTEGER PRIMARY KEY AUTOINCREMENT,"+
+                "NAME VARCHAR(20),"+
+                "MODE VARCHAR(10),"+
+                "SCORE INTEGER"+
+                ");";
+            tx.executeSql(sql);
+        }
+        function showAns(){
+            for(var i=1;i<=4;i++){
+                $("#ans"+i).show();
+                $("#writeContent").hide();
+            }
+        }
+        function hideAns(){
+            for(var i=1;i<=4;i++){
+                $("#ans"+i).hide();
+                $("#writeContent").show();
+            }
+        }
+    </script>
+    <style>
+        #homePage,#selectLearnPage,#showLearnPage,#playPage,#gameOver,#selectPlayPage,#showStat,#selectStat{
+            background: url(img/scrabble-2378253_1920.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+        }
+        .whiteTranparent{
+            background:  rgba(255,255,255,0.7);
+        }
+        table {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<!--    homePage-->
+    <div data-role="page" id="homePage" data-theme="b">
+        <div data-role="header">
+            <h3>EngLearn</h3>
+        </div>
+        <div data-role="content">
+            <br><br><br><br><br><br><br>
+            <a href="#" data-role="button" onclick="onChangePage('#selectLearnPage')">เริ่มเรียน</a>
+            <a href="#" data-role="button" onclick="onPlay(1);">ดูและเลือก</a>
+            <a href="#" data-role="button" onclick="onPlay(2);">ฟังและเลือก</a>
+            <a href="#" data-role="button" onclick="onPlay(3);">ดูและตอบ</a>
+            <a href="#" data-role="button" onclick="onChangePage('#selectStat')">สถิติ</a>
+            <br><br>
+            <center>
+                <div class="ui-grid-a whiteTranparent">
+                    <div class="ui-block-a">
+                        <label>Music</label>
+                        <input type="checkbox" data-role="flipswitch" name="musicSwitch" id="musicSwitch" data-theme="a" onchange="muteBackground();" checked>
+                    </div>
+                    <div class="ui-block-b">
+                        <label>Effect</label>
+                        <input type="checkbox" data-role="flipswitch" name="effectSwitch" id="effectSwith" data-theme="a" onchange="closeSound();" checked>
+                    </div>
+                </div>
+            </center>
+        </div>
+    </div>
+<!--    selectLearnPage-->
+    <div data-role="page" id="selectLearnPage" data-theme="b">
+        <div data-role="header">
+            <h3>Learn</h3>
+        </div>
+        <div data-role="content">
+            <br><br>
+            <div class="ui-grid-a">
+                <div class="ui-block-a">
+                    <a href="#" data-role="button" id="mode1" onclick="onSelectLearn(1);">ของใช้</a>
+                    <a href="#" data-role="button" id="mode2" onclick="onSelectLearn(2);">ดอกไม้</a>
+                    <a href="#" data-role="button" id="mode3" onclick="onSelectLearn(3);">ตัวเลข</a>
+                    <a href="#" data-role="button" id="mode4" onclick="onSelectLearn(4);">ตัวอักษร</a>
+                    <a href="#" data-role="button" id="mode5" onclick="onSelectLearn(5);">ธงชาติ</a>
+                </div>
+                <div class="ui-block-b">
+                    <a href="#" data-role="button" id="mode6" onclick="onSelectLearn(6);">ผลไม้</a>
+                    <a href="#" data-role="button" id="mode7" onclick="onSelectLearn(7);">ยานพาหนะ</a>
+                    <a href="#" data-role="button" id="mode8" onclick="onSelectLearn(8);">สัตว์</a>
+                    <a href="#" data-role="button" id="mode9" onclick="onSelectLearn(9);">สีต่างๆ</a>
+                    <a href="#" data-role="button" onclick="onSelectLearn(10);">อาหาร</a>
+                </div>
+            </div>
+        </div>
+        <div data-role="footer" data-position="fixed">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#" onclick="onChangePage('#homePage')" data-role="button">Back</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+<!--    showLearnPage-->
+    <div data-role="page" id="showLearnPage" data-theme="b">
+        <div data-role="header">
+            <h3 id="showLearnTitle">Title</h3>
+        </div>
+        <div data-role="content" id="showLearnContent">
+        
+        </div>
+        <div data-role="footer" data-position="fixed">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#" onclick="onChangePage('#homePage')" data-role="button">Back</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+<!--    selectPlayPage-->
+    <div data-role="page" id="selectPlayPage" data-theme="b">
+        <div data-role="header">
+            <h3>เลือกชุดเกม</h3>
+        </div>
+        <div data-role="content">
+            <a href="#" data-role="button" onclick="onSelectPlay(1)">ชุด1</a>
+            <a href="#" data-role="button" onclick="onSelectPlay(2)">ชุด2</a>
+            <a href="#" data-role="button" onclick="onSelectPlay(3)">ชุด3</a>
+            <a href="#" data-role="button" onclick="onSelectPlay(4)">ชุด4</a>
+            <a href="#" data-role="button" onclick="onSelectPlay(5)">ชุด5</a>
+        </div>
+        <div data-role="footer" data-position="fixed">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#" data-role="button" onclick="onChangePage('#homePage')">Back</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+<!--    playPage-->
+    <div data-role="page" id="playPage" data-theme="b">
+        <div data-role="content">
+            <center>
+                <img style="width: 50%;" src="" id="playImg">
+                <br>
+                <a href="#" id="ans1" data-role="button" onclick="checkAns(this);"></a>
+                <a href="#" id="ans2" data-role="button" onclick="checkAns(this);"></a>
+                <a href="#" id="ans3" data-role="button" onclick="checkAns(this);"></a>
+                <a href="#" id="ans4" data-role="button" onclick="checkAns(this);"></a>
+                <div id="writeContent"></div>
+            </center>
+        </div>
+    </div>
+<!--    gameOver-->
+    <div data-role="page" id="gameOver" data-theme="b">
+        <div data-role="header">
+            <h3>จบเกม</h3>
+        </div>
+        <div data-role="content">
+            <center>
+                <br><br><br><br>
+                <div class='whiteTranparent'>
+                    <label>คะแนนที่คุณทำได้คือ</label>
+                    <label id="showEndScore"></label>
+                    <label>ใส่ชื่อผู้เล่น</label>
+                    <input type="text" value="" id="saveName">
+                </div>
+            </center>
+        </div>
+        <div data-role="footer" data-position="fixed">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#" data-role="button" onclick="onSave()">บันทึก</a></li>
+                    <li><a href="#" data-role="button" onclick="onRandom();" >เล่นอีกครั้ง</a></li>
+                    <li><a href="#" data-role="button" onclick="onChangePage('#homePage')">กลับหน้าแรก</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+<!--    selectStat-->
+    <div data-role="page" id="selectStat" data-theme="b">
+        <div data-role="header">
+            <h3>Statistic</h3>
+        </div>
+        <div data-role="content">
+            <a href="#" data-role="button" onclick="showStat(1);">ดูและเลือก</a>
+            <a href="#" data-role="button" onclick="showStat(2);">ฟังและเลือก</a>
+            <a href="#" data-role="button" onclick="showStat(3);">ดูและตอบ</a>
+        </div>
+        <div data-role="footer" data-position="fixed">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#" data-role="button" onclick="onChangePage('#homePage')">back</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+<!--    showStat-->
+    <div data-role="page" id="showStat" data-theme="b">
+        <div data-role="header">
+            <h3>Statistic</h3>
+        </div>
+        <div data-role="content">
+            <center>
+                <table class="whiteTranparent">
+                    <thead>
+                        <tr>
+                            <th>ชื่อ</th>
+                            <th>คะแนน</th>
+                        </tr>
+                    </thead>
+                    <tbody id="statResult">
+
+                    </tbody>
+                </table>
+            </center>
+        </div>
+        <div data-role="footer" data-position="fixed">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#" data-role="button" onclick="onChangePage('#homePage')">back</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+<!--
+    Model
+    <div data-role="page">
+        <div data-role="header">
+            <h3></h3>
+        </div>
+        <div data-role="content">
+        
+        </div>
+        <div data-role="footer" data-position="fixed">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#" data-role="button"></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+-->
+    <script>
+        function onSave(){
+            var _name = $("#saveName").val();
+            if (_name == "") {
+                alert("กรุณาใส่ชื่อผู้เล่น");
+            } else {
+                db.transaction(function(tx){
+                    var sql = "INSERT INTO HIGH_SCORE(NAME,MODE,SCORE) VALUES(?,?,?)";
+                    tx.executeSql(sql,[_name,playMode,currentScore],
+                                  function(){
+                        alert("บันทึกสำเร็จ");
+                        onChangePage('#homePage');
+                    });
+                });
+            }
+        }
+        function showStat(selectMode){
+            db.transaction(function(tx){
+                tx.executeSql("SELECT * FROM HIGH_SCORE WHERE MODE = ?",[selectMode],function(tx,result){
+                    row = [];
+                    var len = result.rows.length;
+                    var content = "";
+                    for (var i=0;i<len;i++) {
+                        var rec = result.rows.item(i);
+                        content += "<tr>" +
+                            "<td>" + rec.NAME +
+                            "</td>" +
+                            "<td>" + rec.SCORE + 
+                            "</td>" +
+                            "</tr>";
+                    }
+                    $("#statResult").html(content);
+                    onChangePage("#showStat");
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>
