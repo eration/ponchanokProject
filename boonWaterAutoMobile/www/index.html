@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+
+    <link rel="stylesheet" type="text/css" href="jqm/jquery.mobile.flatui.css" />
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="jqm/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="jqm/jquery.mobile-1.4.5.min.js"></script>
+    <script type="text/javascript" src="jqm/microgear.js"></script>
+    <title>WaterAutoMobile</title>
+    <script>
+        var endValue = 0;
+        var startValue = 0;
+        var currentSensorValue = 0;
+        var currentMode = "หยุดทำงาน";
+        function onSetting(){
+            endValue = $("#endValue").val();
+            startValue = $("#startValue").val();
+            microgear.chat("waterAutoNodeMcu","S"+startValue);
+            microgear.chat("waterAutoNodeMcu","E"+endValue);
+            onRefresh();
+            $("#settingPopup").popup("close");
+            //รับค่าจาก หน้าตั้งค่า แล้วส่งเข้า netpie เพื่อให้ node mcu ส่งค่าต่อ
+        }
+        function setValue(){
+            $("#showStartValue").html("เริ่มรดน้ำ : " + startValue + "%");
+            $("#showEndValue").html("หยุดรดน้ำ  : " + endValue + "%");
+            $("#temperature").html("ค่าความชื้อปัจจุบัน : "+currentSensorValue+" %");
+            $("#workStatus").html("สถานะการทำงาน : "+currentMode);
+            
+            //เซตการแสดงผล ให้เป็น ค่าตามตัวแปร ปัจจุบัน
+        }
+        function onRefresh(){
+            microgear.chat("waterAutoNodeMcu","V");
+            //ส่ง ตัว V ไปที่ netpie เพื่อขอ ค่าปัจจุบัน
+        }
+        const APPKEY = "xD7OZnOC1F851AC";
+        const APPSECRET = "Cjn8L6ONg7B8ow9eH1nAyAjCp";
+        const APPID = "boonWaterAuto";
+        var state = "";
+        var microgear = Microgear.create({
+            gearkey: APPKEY,
+            gearsecret: APPSECRET
+        });
+        microgear.on('message', function(topic,data) {
+            state = data;
+            if (state.charAt(0) == "V") {
+                var stateSplit = state.split("-");
+                currentSensorValue = stateSplit[1];
+                startValue = stateSplit[2];
+                endValue = stateSplit[3];
+                if (stateSplit[4] == "1") {
+                    currentMode = "เริ่มรดน้ำอัตโนมัติ";
+                } else {
+                    currentMode = "หยุดการทำงาน";
+                }
+                setValue();
+            }
+            // เมื่อมี ข้อความเข้ามา จะเข้าที่นี่ จะมีการเช็คว่า ตัวแรกของ ตัวแปร state = V ไหม
+            // เมื่อเจอว่า = v ก็จะ แบ่ง ค่า ต่างๆ ตาม ค่าที่ส่งมาจาก node mcu
+        });
+        microgear.on('connected', function() {
+            $("#connectStatus").html("Connect to Netpie");
+            microgear.setname('waterAutoMobile');
+            microgear.chat("waterAutoNodeMcu","V");
+            // เมื่อเชื่อมต่อ netpie ได้ จะตั้งชื่อ ว่า waterAutoMobile
+        });
+        
+        microgear.resettoken(function(err){
+		microgear.connect(APPID);
+	});
+        function onStart(){
+            if (startValue == 0 || endValue == 0) 
+                alert("กรุณาตั้งค่าการรดน้ำก่อนเปิดการทำงาน");
+            else
+                microgear.chat("waterAutoNodeMcu","M1");
+            onRefresh();
+            //เมื่อกดปุ่มเริ่มทำงาน จะเช็คว่า ได้ตั้งค่า จุดเริ่มรดน้ำ หยุดรดน้ำหรือยัง แล้วสั่งเปิด
+        }
+        function onStop(){
+            microgear.chat("waterAutoNodeMcu","M2");
+            onRefresh();
+            //สั่งปิด
+        }
+    </script>
+</head>
+
+<body>
+    <div data-role="page" id="main">
+        <div data-role="header">
+            <h3>WaterAuto</h3>
+        </div>
+        <div data-role="content">
+            <br><br>
+            <center>
+                <label id="connectStatus">not Connect to Netpie</label>
+                <br>
+                <label id="workStatus">สถานะการทำงาน : หยุดทำงาน</label>
+                <br>
+                <label id="temperature">ค่าความชื้นปัจจุบัน : 0 %</label>
+            </center>
+            <br><br>
+            <center>
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                        <label id="showStartValue">เริ่มรดน้ำ : 0 %</label>
+                    </div>
+                    <div class="ui-block-b">
+                        <label id="showEndValue">หยุดรดน้ำ : 0 %</label>
+                    </div>
+                </div>
+            </center>
+            <br><br>
+            <center>
+                <a href="#" data-role="button" onclick="onStart();">เริ่มทำงานอัตโนมัติ</a>
+                <a href="#" data-role="button" onclick="onStop();">หยุดทำงานอัตโนมัติ</a>
+                <a href="#" data-role="button" onclick="onRefresh();">อัพเดตค่าความชื้น</a>
+                <a href="#settingPopup" data-role="button" data-rel="popup">ตั้งค่า</a>
+            </center>
+        </div>
+        <div data-role="popup" id="settingPopup" class="ui-content">
+            <label>ค่าความชื้นเริ่มต้นรดน้ำ</label><input type="number" value="" id="startValue">
+            <label>ค่าความชื้นหยุดรดน้ำ</label><input type="number" value="" id="endValue">
+            <a href="#" onclick="onSetting()" data-role="button">ยืนยัน</a>
+        </div>
+    </div>
+</body>
+
+</html>
