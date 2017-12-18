@@ -520,11 +520,12 @@
                  db.transaction(function(tx){
                    var sql = "select * from tbCar";
                    tx.executeSql(sql,[],function(tx,result){
+                     $("#listSearch").empty();
                      console.log("prepare search result");
                      var content = "";
                      for (var i=0;i<result.rows.length;i++) {
                        var rec = result.rows.item(i);
-                       content += "<li><a href='#' onclick='fullAuto("+rec.numc+")'>"+rec.numc+"</a></li>";
+                       content += "<li><a href='#' onclick='fullAuto('"+rec.numc+"')'>"+rec.numc+"</a></li>";
                      }
                      console.log(content);
                      $("#listSearch").append(content);
