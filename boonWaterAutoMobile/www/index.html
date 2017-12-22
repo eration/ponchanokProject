@@ -30,16 +30,28 @@
             //รับค่าจาก หน้าตั้งค่า แล้วส่งเข้า netpie เพื่อให้ node mcu ส่งค่าต่อ
         }
         function setValue(){
+          if (indexShow == 1) {
+            $("#showStartValue").html("เริ่มรดน้ำ : " + startValue + "%");
+            $("#showEndValue").html("หยุดรดน้ำ  : " + endValue + "%");
+            $("#temperature").html("ค่าความชื้อปัจจุบัน : "+currentSensorValue+" %");
+            $("#workStatus").html("สถานะการทำงาน : "+currentMode);
+          } else if (indexShow == 2) {
+            $("#showWat").html("ใช้ไฟไปทั้งหมด : " + elecWat + " หน่วย");
+            $("#showWater").html("ใช้น้ำไปทั้งหมด : " + waterCheck + " ลิตร");
+          } else {
             $("#showStartValue").html("เริ่มรดน้ำ : " + startValue + "%");
             $("#showEndValue").html("หยุดรดน้ำ  : " + endValue + "%");
             $("#temperature").html("ค่าความชื้อปัจจุบัน : "+currentSensorValue+" %");
             $("#workStatus").html("สถานะการทำงาน : "+currentMode);
             $("#showWat").html("ใช้ไฟไปทั้งหมด : " + elecWat + " หน่วย");
             $("#showWater").html("ใช้น้ำไปทั้งหมด : " + waterCheck + " ลิตร");
+          }
 
             //เซตการแสดงผล ให้เป็น ค่าตามตัวแปร ปัจจุบัน
         }
-        function onRefresh(){
+        var indexShow = 3;
+        function onRefresh(index){
+            indexShow = index;
             microgear.chat("waterAutoNodeMcu","V");
             //ส่ง ตัว V ไปที่ netpie เพื่อขอ ค่าปัจจุบัน
         }
@@ -132,7 +144,15 @@
             <center>
                 <a href="#" data-role="button" onclick="onStart();">เริ่มทำงานอัตโนมัติ</a>
                 <a href="#" data-role="button" onclick="onStop();">หยุดทำงานอัตโนมัติ</a>
-                <a href="#" data-role="button" onclick="onRefresh();">อัพเดตค่าความชื้น</a>
+                <div class="ui-grid-a">
+                  <div class="ui-block-a">
+                    <a href="#" data-role="button" onclick="onRefresh(1);">อัพเดตค่าความชื้น</a>
+                  </div>
+                  <div class="ui-block-b">
+                    <a href="#" data-role="button" onclick="onRefresh(2);">อัพเดตค่าไฟ / ค่าน้ำ</a>
+                  </div>
+                </div>
+                <a href="#" data-role="button" onclick="onRefresh(3)">อัพเดตข้อมูลทั้งหมด</a>
                 <a href="#settingPopup" data-role="button" data-rel="popup">ตั้งค่า</a>
             </center>
         </div>
