@@ -31,7 +31,7 @@
         console.log("create Table");
       }
       function createTable(tx){
-        // tx.executeSql("DROP TABLE IF EXISTS tbCar");
+//        tx.executeSql("DROP TABLE IF EXISTS tbCar");
          var sql = "CREATE TABLE IF NOT EXISTS tbCar (" +
              "id INTEGER PRIMARY KEY AUTOINCREMENT," +
              "namepc VARCHAR(50), " +
@@ -52,9 +52,37 @@
              "pic_url3 VARCHAR(100),"+
              "pic_url4 VARCHAR(100),"+
              "pic_url5 VARCHAR(100),"+
-             "no_chack INTEGER"+
+             "no_chack INTEGER,"+
+             "payDate varchar(100)"+
              ")";
          tx.executeSql(sql);
+         checkPayDate(tx);
+      }
+
+      function checkPayDate(tx){
+        var sql = "select * from tbCar";
+        tx.executeSql(sql,[],function(tx,result){
+          var len = result.rows.length;
+          for (var i=0;i<len;i++) {
+            var rec = result.rows.item(i);
+            var payDate = new Date(rec.payDate);
+            var currentDate = new Date();
+            var currentTimeStamp = currentDate.getTime();
+            var payTimeStamp = payDate.getTime();
+            if (currentTimeStamp >= payTimeStamp) {
+              var newPayDate = payTimeStamp + 2592000000 ;
+              newPayDate = new Date(newPayDate);
+              newPayDate = newPayDate.getMonth() + "/" + newPayDate.getDate() + "/" + newPayDate.getFullYear();
+              var sql = "update tbCar set chack = 3 , no_chack = ? , payDate = ? where id = ?";
+              var no_chack = rec.no_chack + 1;
+              tx.executeSql(sql,[no_chack,newPayDate,rec.id],function(){
+                console.log("numc : " + rec.numc + " ขาดจ่าย");
+              },function(){
+                console.log("ขาดจ่ายออโต้ error");
+              });
+            }
+          }
+        });
       }
 
       function _onError(tx, error) {
@@ -430,13 +458,18 @@
                 var chack = $("#chack").val();
                 var inputSql = [];
                 var sql;
+                var payDate = new Date(indexUpdatePay.payDate);
+                payDate = payDate.getTime();
+                payDate = payDate + 2592000000;
+                var newPayDate = new Date(payDate);
+                newPayDate = newPayDate.getMonth() + "/" + newPayDate.getDate() + "/" + newPayDate.getFullYear();
                 if (chack == 3) {
                   var no_chack = indexUpdatePay.no_chack + 1;
-                  sql = "UPDATE tbCar SET chack = ? , no_chack = ? WHERE numc = ?";
-                  inputSql = [chack,no_chack,indexUpdatePay.numc];
+                  sql = "UPDATE tbCar SET chack = ? , no_chack = ? , payDate = ? WHERE numc = ?";
+                  inputSql = [chack,no_chack,newPayDate,indexUpdatePay.numc];
                 } else {
-                  sql = "UPDATE tbCar SET chack = ? , no_chack = 0 WHERE numc = ?";
-                  inputSql = [chack,indexUpdatePay.numc];
+                  sql = "UPDATE tbCar SET chack = ? , no_chack = 0 , payDate = ? WHERE numc = ?";
+                  inputSql = [chack,newPayDate,indexUpdatePay.numc];
                 }
                 db.transaction(function(tx){
                   tx.executeSql(sql,inputSql,function(tx,result){
