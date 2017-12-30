@@ -61,14 +61,14 @@
       }
         
         function createPayTable(tx){
-            var sql = "create table if not exists tbPay ("+
-                "id integer parimary key autoincrement," +
+            var sql = "CREATE TABLE IF NOT EXISTS tbPay ("+
+                "id integer primary key autoincrement," +
                 "carId integer,"+
                 "payDate varchar(50),"+
                 "assignDate varchar(50),"+
                 "chack varchar(10)"+
                 ")";
-            tx.executeSql(sql);
+            tx.executeSql(sql,[],function(){},function(){console.log("error table pay")});
         }
 
       function checkPayDate(tx){
@@ -169,8 +169,11 @@
           } else if (numpc[0] != '0') {
             alert("เบอร์โทรศัพต้องขึ้นต้นด้วย 0");
           } else {
+              var currentDate = new Date();
+              currentDate = currentDate.getTime();
+              var payDate = currentDate + 2592000000;
             db.transaction(function(tx){
-                tx.executeSql("INSERT INTO tbCar (namepc, numpc,addpc,pic_url, brand, gen, corc,yout, numc, car_date, price,itotal,pic_url1,pic_url2,pic_url3,pic_url4,pic_url5) VALUES (?,?,?,?,?,?,?,?, ?, ?,?, ?, ?, ?,?,?,? )",[namepc, numpc, addpc,pic,brand, gen, corc, yout, numc, cardate, price,itotal,pic1,pic2,pic3,pic,pic5],
+                tx.executeSql("INSERT INTO tbCar (namepc, numpc,addpc,pic_url, brand, gen, corc,yout, numc, car_date, price,itotal,pic_url1,pic_url2,pic_url3,pic_url4,pic_url5,payDate) VALUES (?,?,?,?,?,?,?,?, ?, ?,?, ?, ?, ?,?,?,?,? )",[namepc, numpc, addpc,pic,brand, gen, corc, yout, numc, cardate, price,itotal,pic1,pic2,pic3,pic,pic5,payDate],
                 function(tx, result){
                      alert("Insert record success...");
                      console.log("insert record");
@@ -475,9 +478,12 @@
                 var inputSql = [];
                 var sql;
                 var payDate = new Date(indexUpdatePay.payDate);
+                   var assignDate = new Date(indexUpdatePay.payDate);
+                   console.log(indexUpdatePay.payDate);
                 payDate = payDate.getTime();
                 payDate = payDate + 2592000000;
                 var newPayDate = new Date(payDate);
+                   
                 newPayDate = newPayDate.getMonth() + "/" + newPayDate.getDate() + "/" + newPayDate.getFullYear();
                 var paySql;
                    var inputPaySql;
@@ -492,7 +498,8 @@
                   inputSql = [chack,newPayDate,indexUpdatePay.numc];
                 }
                    paySql = "insert into tbPay (carId,payDate,assignDate,chack) values (?,?,?,?)";
-                    inputPaySql = [indexUpdatePay.id,currentDate,payDate.getMonth(),chack];
+                    inputPaySql = [indexUpdatePay.id,currentDate,assignDate.getMonth(),chack];
+                   console.log("test");
                 db.transaction(function(tx){
                   tx.executeSql(sql,inputSql,function(tx,result){
                     alert("Update Success");
@@ -696,7 +703,7 @@
     
     <div data-role="page" id="listPay">
         <div data-role="header">
-            ค้นหารถ
+            <h3>ค้นหารถ</h3>
         </div>
         <div data-role="content">
             <form class="ui-filterable">
@@ -717,7 +724,7 @@
     
     <div data-role="page" id="showPayTable">
         <div data-role="header">
-        
+            <h3>ตารางชำระเงิน</h3>
         </div>
         <div data-role="content">
             <table>
@@ -737,7 +744,7 @@
         <div data-role="footer" data-position="fixed">
             <div data-role="navbar">
                 <ul>
-                    <la><a data-role="button" data-rel="back">back</a></la>
+                    <li><a data-role="button" data-rel="back">back</a></li>
                 </ul>
             </div>
         </div>
