@@ -59,7 +59,7 @@
          checkPayDate(tx);
          createPayTable(tx);
       }
-        
+
         function createPayTable(tx){
             var sql = "CREATE TABLE IF NOT EXISTS tbPay ("+
                 "id integer primary key autoincrement," +
@@ -85,7 +85,6 @@
               var newPayDate = payTimeStamp + 2592000000 ;
               newPayDate = new Date(newPayDate);
               newPayDate = newPayDate.getMonth() + "/" + newPayDate.getDate() + "/" + newPayDate.getFullYear();
-              var currentDate = new Date();
               currentDate = currentDate.getMonth() + "/" + currentDate.getDate() + "/" + currentDate.getFullYear();
               var sql = "update tbCar set chack = 3 , no_chack = ? , payDate = ? where id = ?";
               var paySql = "insert into tbPay(carId,payDate,assignDate,chack) values (?,?,?,3)";
@@ -135,7 +134,8 @@
           var corc = $("#corc").val();
           var yout = $("#yout").val();
           var numc = $("#numc").val();
-          var cardate = $("#cardate").val();
+          var cardate = new Date();
+          cardate = cardate.getTime();
           var price = $("#price").val();
           var itotal = $("#itotal").val();
           var pic1 = $("#picUrl1").val();
@@ -262,12 +262,14 @@
            for (var i=0; i< len;i++)
                {
                    var rec = result.rows.item(i);
+                   var car_date = new Date(rec.car_date);
+                   car_date = (car_date.getMonth()+1)+"/"+car_date.getDate()+"/"+car_date.getFullYear();
                    if (rec.no_chack == 4 && rec.chack == 3) {
-                     listContent += '<li>' + '<a href = "#">' +'<h3 class = "ui-li-heading">' + rec.car_date + ' ยึดรถ</h3>' + '<p class = "ui-li-desc">' +'ชื่อ'+ rec.namepc +'<br/>' +' ยี่ห้อ ' +rec.brand + ' รุ่น ' +rec.gen +'<br>'+' สี ' +rec.corc +' ปีที่ออก '+rec.yout+' เลขทะเบียน ' +rec.numc +' ราคาจำนำ ' +rec.price +' บาท ' +'</p></a></l>';
+                     listContent += '<li>' + '<a href = "#">' +'<h3 class = "ui-li-heading">' + car_date + ' ยึดรถ</h3>' + '<p class = "ui-li-desc">' +'ชื่อ'+ rec.namepc +'<br/>' +' ยี่ห้อ ' +rec.brand + ' รุ่น ' +rec.gen +'<br>'+' สี ' +rec.corc +' ปีที่ออก '+rec.yout+' เลขทะเบียน ' +rec.numc +' ราคาจำนำ ' +rec.price +' บาท ' +'</p></a></l>';
                    } else if (rec.chack == 2) {
-                     listContent += '<li>' + '<a href = "#"">' +'<h3 class = "ui-li-heading">' + rec.car_date + ' ไถ่รถคืน</h3>' + '<p class = "ui-li-desc">' +'ชื่อ'+ rec.namepc +'<br/>' +' ยี่ห้อ ' +rec.brand + ' รุ่น ' +rec.gen +'<br>'+' สี ' +rec.corc +' ปีที่ออก '+rec.yout+' เลขทะเบียน ' +rec.numc +' ราคาจำนำ ' +rec.price +' บาท ' +'</p></a></l>';
+                     listContent += '<li>' + '<a href = "#"">' +'<h3 class = "ui-li-heading">' + car_date + ' ไถ่รถคืน</h3>' + '<p class = "ui-li-desc">' +'ชื่อ'+ rec.namepc +'<br/>' +' ยี่ห้อ ' +rec.brand + ' รุ่น ' +rec.gen +'<br>'+' สี ' +rec.corc +' ปีที่ออก '+rec.yout+' เลขทะเบียน ' +rec.numc +' ราคาจำนำ ' +rec.price +' บาท ' +'</p></a></l>';
                    } else {
-                     listContent += '<li>' + '<a href = "#" onclick="pcar(' + i + ');">' +'<h3 class = "ui-li-heading">' + rec.car_date + '</h3>' + '<p class = "ui-li-desc">' +'ชื่อ'+ rec.namepc +'<br/>' +' ยี่ห้อ ' +rec.brand + ' รุ่น ' +rec.gen +'<br>'+' สี ' +rec.corc +' ปีที่ออก '+rec.yout+' เลขทะเบียน ' +rec.numc +' ราคาจำนำ ' +rec.price +' บาท ' +'</p></a></l>';
+                     listContent += '<li>' + '<a href = "#" onclick="pcar(' + i + ');">' +'<h3 class = "ui-li-heading">' + car_date + '</h3>' + '<p class = "ui-li-desc">' +'ชื่อ'+ rec.namepc +'<br/>' +' ยี่ห้อ ' +rec.brand + ' รุ่น ' +rec.gen +'<br>'+' สี ' +rec.corc +' ปีที่ออก '+rec.yout+' เลขทะเบียน ' +rec.numc +' ราคาจำนำ ' +rec.price +' บาท ' +'</p></a></l>';
                    }
                    rows.push(rec);
                }
@@ -293,7 +295,9 @@
            for (var i=0; i< len;i++)
                {
                    var rec = result.rows.item(i);
-                   listContent += '<li>' + '<a href = "#" onclick="puser(' + i + ');">' +'<h3 class = "ui-li-heading">' + rec.car_date + '</h3>' + '<p class = "ui-li-desc">' +'ชื่อ'+ rec.namepc +' เบอร์โทรศัพท์ '+rec.numpc+' ที่อยู่ '+rec.addpc+ '</p></a>' +'<a href = "#" data-icon="minus" onclick = "deleteCar(' + i + '); "></a>' +'</l>';
+                   var car_date = new Date(rec.car_date);
+                   car_date = (car_date.getMonth()+1)+"/"+car_date.getDate()+"/"+car_date.getFullYear();
+                   listContent += '<li>' + '<a href = "#" onclick="puser(' + i + ');">' +'<h3 class = "ui-li-heading">' + car_date + '</h3>' + '<p class = "ui-li-desc">' +'ชื่อ'+ rec.namepc +' เบอร์โทรศัพท์ '+rec.numpc+' ที่อยู่ '+rec.addpc+ '</p></a>' +'<a href = "#" data-icon="minus" onclick = "deleteCar(' + i + '); "></a>' +'</l>';
                    rows.push(rec);
                }
            $("#listUsers").append(listContent);
@@ -311,7 +315,9 @@
            var corc = rows[index].corc;
            var yout = rows[index].yout;
            var numc = rows[index].numc;
-           var cardate = rows[index].car_date;
+           var car_date = new Date(rec.car_date);
+           car_date = (car_date.getMonth()+1)+"/"+car_date.getDate()+"/"+car_date.getFullYear();
+           var cardate = car_date;
            var price = rows[index].price;
            var pic1 = rows[index].pic_url1;
            var pic2 = rows[index].pic_url2;
@@ -350,7 +356,9 @@
          $("#searchCar").empty();
          for (var i=0; i< len;i++) {
            var rec = result.rows.item(i);
-           searchContent += '<li>' + '<a href = "#" onclick="pay(' + i + ');">' +'<h3 class = "ui-li-heading">' + rec.car_date + '</h3>' + '<p class = "ui-li-desc">' +'ชื่อ'+ rec.namepc + ' เบอร์โทรศัพท์ ' +rec.numpc+' ยี่ห้อ ' +rec.brand + ' รุ่น ' +rec.gen +'<br>'+' สี ' +rec.corc +' เลขทะเบียน ' +rec.numc +' ราคาจำนำ ' +rec.price +' บาท ' +'</p></a>'+'</l>';
+           var car_date = new Date(rec.car_date);
+           car_date = (car_date.getMonth()+1)+"/"+car_date.getDate()+"/"+car_date.getFullYear();
+           searchContent += '<li>' + '<a href = "#" onclick="pay(' + i + ');">' +'<h3 class = "ui-li-heading">' + car_date + '</h3>' + '<p class = "ui-li-desc">' +'ชื่อ'+ rec.namepc + ' เบอร์โทรศัพท์ ' +rec.numpc+' ยี่ห้อ ' +rec.brand + ' รุ่น ' +rec.gen +'<br>'+' สี ' +rec.corc +' เลขทะเบียน ' +rec.numc +' ราคาจำนำ ' +rec.price +' บาท ' +'</p></a>'+'</l>';
            rows.push(rec);
          }
          $("#searchCar").append(searchContent);
@@ -359,7 +367,9 @@
        }
        function Edit(index){
          $("#editcarid").val(rows[index].id);
-         $("#editcardate").val(rows[index].car_date);
+         var car_date = new Date(rows[index].car_date);
+         car_date = (car_date.getMonth()+1)+"/"+car_date.getDate()+"/"+car_date.getFullYear();
+         $("#editcardate").val(car_date);
          $("#editnamepc").val(rows[index].namepc);
                    $("#editnumpc").val(rows[index].numpc);
                    $("#editaddpc").val(rows[index].addpc);
@@ -389,7 +399,8 @@
                    var ccorc = $("#editcorc").val();
                    var cyout = $("#edityout").val();
                    var cnumc = $("#editnumc").val();
-                   var date = $("#editcardate").val();
+                   var date = new Date(rec.car_date);
+                   date = (car_date.getMonth()+1)+"/"+car_date.getDate()+"/"+car_date.getFullYear();
                    var cprice = $("#editprice").val();
                    var cpic1 = $("#editpicUrl1").val();
                    var cpic2 = $("#editpicUrl2").val();
@@ -431,8 +442,10 @@
                  }
 
                function pcar(index){
+                 var car_date = new Date(rows[index].car_date);
+                 car_date = (car_date.getMonth()+1)+"/"+car_date.getDate()+"/"+car_date.getFullYear();
                    $("#scarid").val(rows[index].id);
-                   $("#scardate").val(rows[index].car_date);
+                   $("#scardate").val(car_date);
                    $("#snamepc").val(rows[index].namepc);
                    $("#sbrand").val(rows[index].brand);
                    $("#sgen").val(rows[index].gen);
@@ -483,12 +496,12 @@
                 payDate = payDate.getTime();
                 payDate = payDate + 2592000000;
                 var newPayDate = new Date(payDate);
-                   
-                newPayDate = newPayDate.getMonth() + "/" + newPayDate.getDate() + "/" + newPayDate.getFullYear();
+
+                newPayDate = newPayDate.getTime();
                 var paySql;
                    var inputPaySql;
                    var currentDate = new Date();
-                   currentDate = currentDate.getMonth() + "/" + currentDate.getDate() + "/" + currentDate.getFullYear();
+                   currentDate = currentDay.getTime();
                 if (chack == 3) {
                   var no_chack = indexUpdatePay.no_chack + 1;
                   sql = "UPDATE tbCar SET chack = ? , no_chack = ? , payDate = ? WHERE numc = ?";
@@ -498,7 +511,7 @@
                   inputSql = [chack,newPayDate,indexUpdatePay.numc];
                 }
                    paySql = "insert into tbPay (carId,payDate,assignDate,chack) values (?,?,?,?)";
-                    inputPaySql = [indexUpdatePay.id,currentDate,assignDate.getMonth(),chack];
+                    inputPaySql = [indexUpdatePay.id,currentDate,(assignDate.getMonth()+1),chack];
                    console.log("test");
                 db.transaction(function(tx){
                   tx.executeSql(sql,inputSql,function(tx,result){
@@ -605,7 +618,7 @@
                  $("#searchNumC").val(text);
                  searchCar();
                }
-        
+
         function listPay(){
             $("#searchPayTable").val("");
                  db.transaction(function(tx){
@@ -625,7 +638,7 @@
                    });
                  });
         }
-        
+
         function fullAutoPayTable(id) {
             db.transaction(function(tx){
                var sql = "select * from tbPay where carId = ? order by payDate";
@@ -700,7 +713,7 @@
             <center><h3>Copyright(c) by cs-kps</h3></center>
         </div>
     </div>
-    
+
     <div data-role="page" id="listPay">
         <div data-role="header">
             <h3>ค้นหารถ</h3>
@@ -721,7 +734,7 @@
             </div>
         </div>
     </div>
-    
+
     <div data-role="page" id="showPayTable">
         <div data-role="header">
             <h3>ตารางชำระเงิน</h3>
@@ -737,7 +750,7 @@
                     </tr>
                 </thead>
                 <tbody id="bodyShowPay">
-                
+
                 </tbody>
             </table>
         </div>
