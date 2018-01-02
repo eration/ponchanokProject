@@ -61,6 +61,7 @@
       }
 
         function createPayTable(tx){
+          // tx.executeSql("DROP TABLE IF EXISTS tbPay");
             var sql = "CREATE TABLE IF NOT EXISTS tbPay ("+
                 "id integer primary key autoincrement," +
                 "carId integer,"+
@@ -212,12 +213,14 @@
          for (var i=0; i< len;i++)
              {
                  var rec = result.rows.item(i);
+                 var car_date = new Date(Number(rec.car_date));
+                 car_date = (car_date.getMonth()+1)+"/"+car_date.getDate()+"/"+car_date.getFullYear();
                  if (rec.no_chack >= 4 && rec.chack == 3) {
-                    listContent += '<li>' + '<a href = "#">' +'<h3 class = "ui-li-heading">' + rec.car_date + ' ยึดรถ</h3>' + '<p class = "ui-li-desc">' +'ชื่อ '+ rec.namepc +' เบอร์โทรศัพท์ '+rec.numpc+' ที่อยู่ '+rec.addpc+ '<br/>' +' ยี่ห้อ ' +rec.brand + ' รุ่น ' +rec.gen +'<br>'+' สี ' +rec.corc +' ปีที่ออก '+rec.yout+' เลขทะเบียน ' +rec.numc +' ราคาจำนำ ' +rec.price +' บาท ' +'</p></a></l>';
+                    listContent += '<li>' + '<a href = "#">' +'<h3 class = "ui-li-heading">' + car_date + ' ยึดรถ</h3>' + '<p class = "ui-li-desc">' +'ชื่อ '+ rec.namepc +' เบอร์โทรศัพท์ '+rec.numpc+' ที่อยู่ '+rec.addpc+ '<br/>' +' ยี่ห้อ ' +rec.brand + ' รุ่น ' +rec.gen +'<br>'+' สี ' +rec.corc +' ปีที่ออก '+rec.yout+' เลขทะเบียน ' +rec.numc +' ราคาจำนำ ' +rec.price +' บาท ' +'</p></a></l>';
                  } else if (rec.chack == 2) {
-                   listContent += '<li>' + '<a href = "#">' +'<h3 class = "ui-li-heading">' + rec.car_date + ' ไถ่รถคืน</h3>' + '<p class = "ui-li-desc">' +'ชื่อ '+ rec.namepc +' เบอร์โทรศัพท์ '+rec.numpc+' ที่อยู่ '+rec.addpc+ '<br/>' +' ยี่ห้อ ' +rec.brand + ' รุ่น ' +rec.gen +'<br>'+' สี ' +rec.corc +' ปีที่ออก '+rec.yout+' เลขทะเบียน ' +rec.numc +' ราคาจำนำ ' +rec.price +' บาท ' +'</p></a></l>';
+                   listContent += '<li>' + '<a href = "#">' +'<h3 class = "ui-li-heading">' + car_date + ' ไถ่รถคืน</h3>' + '<p class = "ui-li-desc">' +'ชื่อ '+ rec.namepc +' เบอร์โทรศัพท์ '+rec.numpc+' ที่อยู่ '+rec.addpc+ '<br/>' +' ยี่ห้อ ' +rec.brand + ' รุ่น ' +rec.gen +'<br>'+' สี ' +rec.corc +' ปีที่ออก '+rec.yout+' เลขทะเบียน ' +rec.numc +' ราคาจำนำ ' +rec.price +' บาท ' +'</p></a></l>';
                  } else {
-                   listContent += '<li>' + '<a href = "#" onclick="Edit(' + i + ');">' +'<h3 class = "ui-li-heading">' + rec.car_date + '</h3>' + '<p class = "ui-li-desc">' +'ชื่อ '+ rec.namepc +' เบอร์โทรศัพท์ '+rec.numpc+' ที่อยู่ '+rec.addpc+ '<br/>' +' ยี่ห้อ ' +rec.brand + ' รุ่น ' +rec.gen +'<br>'+' สี ' +rec.corc +' ปีที่ออก '+rec.yout+' เลขทะเบียน ' +rec.numc +' ราคาจำนำ ' +rec.price +' บาท ' +'</p></a></l>';
+                   listContent += '<li>' + '<a href = "#" onclick="Edit(' + i + ');">' +'<h3 class = "ui-li-heading">' + car_date + '</h3>' + '<p class = "ui-li-desc">' +'ชื่อ '+ rec.namepc +' เบอร์โทรศัพท์ '+rec.numpc+' ที่อยู่ '+rec.addpc+ '<br/>' +' ยี่ห้อ ' +rec.brand + ' รุ่น ' +rec.gen +'<br>'+' สี ' +rec.corc +' ปีที่ออก '+rec.yout+' เลขทะเบียน ' +rec.numc +' ราคาจำนำ ' +rec.price +' บาท ' +'</p></a></l>';
                  }
 
                  rows.push(rec);
