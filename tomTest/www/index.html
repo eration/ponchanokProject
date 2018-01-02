@@ -77,7 +77,7 @@
           var len = result.rows.length;
           for (var i=0;i<len;i++) {
             var rec = result.rows.item(i);
-            var payDate = new Date(rec.payDate);
+            var payDate = new Date(Number(rec.payDate));
             var currentDate = new Date();
             var currentTimeStamp = currentDate.getTime();
             var payTimeStamp = payDate.getTime();
@@ -262,7 +262,7 @@
            for (var i=0; i< len;i++)
                {
                    var rec = result.rows.item(i);
-                   var car_date = new Date(rec.car_date);
+                   var car_date = new Date(Number(rec.car_date));
                    car_date = (car_date.getMonth()+1)+"/"+car_date.getDate()+"/"+car_date.getFullYear();
                    if (rec.no_chack == 4 && rec.chack == 3) {
                      listContent += '<li>' + '<a href = "#">' +'<h3 class = "ui-li-heading">' + car_date + ' ยึดรถ</h3>' + '<p class = "ui-li-desc">' +'ชื่อ'+ rec.namepc +'<br/>' +' ยี่ห้อ ' +rec.brand + ' รุ่น ' +rec.gen +'<br>'+' สี ' +rec.corc +' ปีที่ออก '+rec.yout+' เลขทะเบียน ' +rec.numc +' ราคาจำนำ ' +rec.price +' บาท ' +'</p></a></l>';
@@ -295,7 +295,7 @@
            for (var i=0; i< len;i++)
                {
                    var rec = result.rows.item(i);
-                   var car_date = new Date(rec.car_date);
+                   var car_date = new Date(Number(rec.car_date));
                    car_date = (car_date.getMonth()+1)+"/"+car_date.getDate()+"/"+car_date.getFullYear();
                    listContent += '<li>' + '<a href = "#" onclick="puser(' + i + ');">' +'<h3 class = "ui-li-heading">' + car_date + '</h3>' + '<p class = "ui-li-desc">' +'ชื่อ'+ rec.namepc +' เบอร์โทรศัพท์ '+rec.numpc+' ที่อยู่ '+rec.addpc+ '</p></a>' +'<a href = "#" data-icon="minus" onclick = "deleteCar(' + i + '); "></a>' +'</l>';
                    rows.push(rec);
@@ -315,7 +315,7 @@
            var corc = rows[index].corc;
            var yout = rows[index].yout;
            var numc = rows[index].numc;
-           var car_date = new Date(rec.car_date);
+           var car_date = new Date(Number(rec.car_date));
            car_date = (car_date.getMonth()+1)+"/"+car_date.getDate()+"/"+car_date.getFullYear();
            var cardate = car_date;
            var price = rows[index].price;
@@ -356,7 +356,7 @@
          $("#searchCar").empty();
          for (var i=0; i< len;i++) {
            var rec = result.rows.item(i);
-           var car_date = new Date(rec.car_date);
+           var car_date = new Date(Number(rec.car_date));
            car_date = (car_date.getMonth()+1)+"/"+car_date.getDate()+"/"+car_date.getFullYear();
            searchContent += '<li>' + '<a href = "#" onclick="pay(' + i + ');">' +'<h3 class = "ui-li-heading">' + car_date + '</h3>' + '<p class = "ui-li-desc">' +'ชื่อ'+ rec.namepc + ' เบอร์โทรศัพท์ ' +rec.numpc+' ยี่ห้อ ' +rec.brand + ' รุ่น ' +rec.gen +'<br>'+' สี ' +rec.corc +' เลขทะเบียน ' +rec.numc +' ราคาจำนำ ' +rec.price +' บาท ' +'</p></a>'+'</l>';
            rows.push(rec);
@@ -367,7 +367,7 @@
        }
        function Edit(index){
          $("#editcarid").val(rows[index].id);
-         var car_date = new Date(rows[index].car_date);
+         var car_date = new Date(Number(rows[index].car_date));
          car_date = (car_date.getMonth()+1)+"/"+car_date.getDate()+"/"+car_date.getFullYear();
          $("#editcardate").val(car_date);
          $("#editnamepc").val(rows[index].namepc);
@@ -399,7 +399,7 @@
                    var ccorc = $("#editcorc").val();
                    var cyout = $("#edityout").val();
                    var cnumc = $("#editnumc").val();
-                   var date = new Date(rec.car_date);
+                   var date = new Date(Number(rec.car_date));
                    date = (car_date.getMonth()+1)+"/"+car_date.getDate()+"/"+car_date.getFullYear();
                    var cprice = $("#editprice").val();
                    var cpic1 = $("#editpicUrl1").val();
@@ -442,7 +442,7 @@
                  }
 
                function pcar(index){
-                 var car_date = new Date(rows[index].car_date);
+                 var car_date = new Date(Number(rows[index].car_date));
                  car_date = (car_date.getMonth()+1)+"/"+car_date.getDate()+"/"+car_date.getFullYear();
                    $("#scarid").val(rows[index].id);
                    $("#scardate").val(car_date);
@@ -490,8 +490,8 @@
                 var chack = $("#chack").val();
                 var inputSql = [];
                 var sql;
-                var payDate = new Date(indexUpdatePay.payDate);
-                   var assignDate = new Date(indexUpdatePay.payDate);
+                var payDate = new Date(Number(indexUpdatePay.payDate));
+                   var assignDate = new Date(Number(indexUpdatePay.payDate));
                    console.log(indexUpdatePay.payDate);
                 payDate = payDate.getTime();
                 payDate = payDate + 2592000000;
@@ -501,7 +501,7 @@
                 var paySql;
                    var inputPaySql;
                    var currentDate = new Date();
-                   currentDate = currentDay.getTime();
+                   currentDate = currentDate.getTime();
                 if (chack == 3) {
                   var no_chack = indexUpdatePay.no_chack + 1;
                   sql = "UPDATE tbCar SET chack = ? , no_chack = ? , payDate = ? WHERE numc = ?";
