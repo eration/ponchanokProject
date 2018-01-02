@@ -83,13 +83,10 @@
             var payTimeStamp = payDate.getTime();
             if (currentTimeStamp >= payTimeStamp) {
               var newPayDate = payTimeStamp + 2592000000 ;
-              newPayDate = new Date(newPayDate);
-              newPayDate = newPayDate.getMonth() + "/" + newPayDate.getDate() + "/" + newPayDate.getFullYear();
-              currentDate = currentDate.getMonth() + "/" + currentDate.getDate() + "/" + currentDate.getFullYear();
               var sql = "update tbCar set chack = 3 , no_chack = ? , payDate = ? where id = ?";
               var paySql = "insert into tbPay(carId,payDate,assignDate,chack) values (?,?,?,3)";
               var no_chack = rec.no_chack + 1;
-              tx.executeSql(paySql,[rec.id,currentDate,payDate.getMonth()]);
+              tx.executeSql(paySql,[rec.id,currentTimeStamp,(payDate.getMonth()+1)]);
               tx.executeSql(sql,[no_chack,newPayDate,rec.id],function(){
                 console.log("numc : " + rec.numc + " ขาดจ่าย");
               },function(){
