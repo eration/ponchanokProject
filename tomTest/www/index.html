@@ -675,8 +675,9 @@
                         } else if (rec.assignDate == 11) {
                             content += "<td>ธันวาคม</td>";
                         }
+                        var payDateNow = new Date(Number(rec.payDate));
                         content += "<td>"+
-                            rec.payDate+
+                            (payDateNow.getMonth()+1)+"/"+payDateNow.getDate()+"/"+payDateNow.getFullYear()+
                             "</td>";
                         if (rec.chack == 1) {
                             content += "<td>จ่ายเฉพาะดอกเบี้ย"+"</td>";
