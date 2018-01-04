@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <link rel="stylesheet" type="text/css" href="jqm/jquery.mobile.flatui.css" />
+    <title>Hello World</title>
+    <style>
+      table{
+        text-align: center;
+      }
+    </style>
+</head>
+
+<body>
+    <div data-role="page" id="main">
+        <div data-role="header">
+            <h3>CoinCount</h3>
+        </div>
+        <div data-role="content">
+            <br><br>
+            <center>
+                <p>จำนวนเหรียญ</p>
+                <label id='showOneBath'>จำนวนเหรียญ 1 บาท = 0 เหรียญ</label>
+                <br>
+                <label id='showFiveBath'>จำนวนเหรียญ 5 บาท = 0 เหรียญ</label>
+                <br>
+                <label id="showTenBath">จำนวนเหรียญ 10 บาท = 0 เหรียญ</label>
+                <br>
+                <label id="showTotalBath">รวมเป็นเงิน 0 บาท</label>
+                <br>
+            </center>
+            <a href="#" data-role="button" onclick="onRefresh();">อัพเดตจำนวนเหรียญ</a>
+            <a href="#" data-role="button" onclick="onShowTable();">แสดงจำนวนเหรียญทุกเดือน</a>
+            <a href="#" data-role="button" onclick="onResetMonth();">ล้างจำนวนเหรียญของเดือนนี้่</a>
+            <a href="#" data-role="button" onclick="onResetAll();">ล้างจำนวนเหรียญทุกเดือน</a>
+        </div>
+    </div>
+    <div data-role="page" id="showTable">
+      <div data-role="header">
+        <h3>เงินออม</h3>
+      </div>
+      <div data-role="content">
+        <center>
+          <table>
+            <thead>
+              <tr>
+                <th>เดือน</th>
+                <th>จำนวนเงิน</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>มกราคม</td>
+                <td id="month1">0 บาท </td>
+              </tr>
+              <tr>
+                <td>กุมภาพันธ์</td>
+                <td id="month2">0 บาท </td>
+              </tr>
+              <tr>
+                <td>มีนาคม</td>
+                <td id="month3">0 บาท </td>
+              </tr>
+              <tr>
+                <td>เมษายน</td>
+                <td id="month4">0 บาท </td>
+              </tr>
+              <tr>
+                <td>พฤษภาคม</td>
+                <td id="month5">0 บาท </td>
+              </tr>
+              <tr>
+                <td>มิถุนายน</td>
+                <td id="month6">0 บาท </td>
+              </tr>
+              <tr>
+                <td>กรกฏาคม</td>
+                <td id="month7">0 บาท </td>
+              </tr>
+              <tr>
+                <td>สิงหาคม</td>
+                <td id="month8">0 บาท </td>
+              </tr>
+              <tr>
+                <td>กันยายน</td>
+                <td id="month9">0 บาท </td>
+              </tr>
+              <tr>
+                <td>ตุลาคม</td>
+                <td id="month10">0 บาท </td>
+              </tr>
+              <tr>
+                <td>พฤศจิกายน</td>
+                <td id="month11">0 บาท </td>
+              </tr>
+              <tr>
+                <td>ธันวาคม</td>
+                <td id="month12">0 บาท </td>
+              </tr>
+            </tbody>
+          </table>
+        </center>
+        <br>
+        <p id="totalAllMonth">รวมทั้งหมด 0 บาท </p>
+      </div>
+      <div data-role="footer" data-position="fixed">
+        <div data-role="navbar">
+          <ul>
+            <li><a href="#" data-role="button" data-rel="back">Back</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="jqm/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="jqm/jquery.mobile-1.4.5.min.js"></script>
+    <script>
+      var tenCoin = 0;
+      var fiveCoin = 0;
+      var oneCoin = 0;
+      var totalValue = 0;
+      $(onRefresh);
+      function myLoad(){
+        $.mobile.loading( 'show', {
+        	text: 'Loading',
+        	textVisible: true,
+        	theme: 'a',
+        	html: ""
+        });
+      }
+      function hideMyLoad(){
+        $.mobile.loading("hide");
+      }
+      function onRefresh(){
+        myLoad();
+        $.get("http://eration.esy.es/popPhp/showCoin.php",function(data,status){
+          data = JSON.parse(data);
+          var currentDate = new Date();
+          var currentMonth = currentDate.getMonth();
+          tenCoin = data[currentMonth][3];
+          fiveCoin = data[currentMonth][2];
+          oneCoin = data[currentMonth][1];
+          totalValue = Number(oneCoin) + Number(fiveCoin * 5) + Number(tenCoin * 10);
+          console.log("onRefresh");
+          setValue();
+        });
+      }
+
+      function setValue(){
+        $("#showOneBath").html("จำนวนเหรียญ 1 บาท = " + oneCoin + " เหรียญ");
+        $("#showFiveBath").html("จำนวนเหรียญ 5 บาท = " + fiveCoin + " เหรียญ");
+        $("#showTenBath").html("จำนวนเหรียญ 10 บาท = " + tenCoin + " เหรียญ");
+        $("#showTotalBath").html("รวมเป็นเงิน " + totalValue + " บาท");
+        hideMyLoad();
+        console.log("setValue");
+      }
+
+      function onShowTable(){
+        myLoad();
+        $.get("http://eration.esy.es/popPhp/showCoin.php",function(data,status){
+          data = JSON.parse(data);
+          var len = data.length;
+          var allMonth = 0;
+          for (var i=0;i<len;i++) {
+            var totalMoney = Number(data[i][1]) + Number(data[i][2] * 5) + Number(data[i][3] * 10);
+            allMonth += totalMoney;
+            $("#month"+data[i][0]).html(totalMoney+ " บาท");
+          };
+          $("#totalAllMonth").html("รวมทั้งหมด " + allMonth + " บาท");
+          hideMyLoad();
+          $.mobile.changePage("#showTable");
+        });
+      }
+
+      function onResetMonth(){
+        console.log("onResetMonth");
+        myLoad();
+        var currentDate = new Date();
+        var currentMonth = currentDate.getMonth() + 1;
+        $.get("http://eration.esy.es/popPhp/resetMonth.php?month="+currentMonth,function(data,status){
+          alert(data);
+          onRefresh();
+        });
+      }
+
+      function onResetAll(){
+        console.log("onResetAll");
+        myLoad();
+        $.get("http://eration.esy.es/popPhp/resetMonth.php?month=99",function(data,status){
+          alert(data);
+          onRefresh();
+        });
+      }
+    </script>
+</body>
+
+</html>
