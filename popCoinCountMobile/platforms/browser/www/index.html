@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <link rel="stylesheet" type="text/css" href="jqm/jquery.mobile.flatui.css" />
+    <title>Hello World</title>
+</head>
+
+<body>
+    <div data-role="page" id="main">
+        <div data-role="header">
+            <h3>CoinCount</h3>   
+        </div>
+        <div data-role="content">
+            <br><br>
+            <center>
+                <p>จำนวนเหรียญ</p>
+                <label id='showOneBath'>จำนวนเหรียญ 1 บาท = 0 เหรียญ</label>
+                <br>
+                <label id='showFiveBath'>จำนวนเหรียญ 5 บาท = 0 เหรียญ</label>
+                <br>
+                <label id="showTenBath">จำนวนเหรียญ 10 บาท = 0 เหรียญ</label>
+                <br>
+                <label id="showTotalBath">รวมเป็นเงิน 0 บาท</label>
+            </center>
+        </div>
+        <div data-role="footer" data-position="fixed">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#" data-role="button" onclick="onRefresh();">เริ่มนับจำนวนเหรียญใหม่</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="jqm/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="jqm/jquery.mobile-1.4.5.min.js"></script>
+    <script type="text/javascript" src="jqm/microgear.js"></script>
+    <script>
+        const APPKEY = "uizaAs8rwnkxrlg";
+        const APPSECRET = "9BbNbXocMuRgy4jbDrGCVozdP";
+        const APPID = "popCoinCount";
+        var oneBath = 0;
+        var fiveBath = 0;
+        var tenBath = 0;
+        var state = "";
+        //***
+        var microgear = Microgear.create({
+            gearkey: APPKEY,
+            gearsecret: APPSECRET
+        });
+        /*
+            ส่วนนี้คือ ฟังก์ชั่นของ netpie เอาไว้เชื่อมต่อ เข้า netpie
+        */
+        //***
+        function onRefresh(){
+            microgear.chat("coinCountESP","R"); //ส่งข้อความ R ไปที่ netpie ส่งหา ตัวชื่อ coinCountESP
+            oneBath = 0;
+            fiveBath = 0;
+            tenBath = 0;
+            $("#showOneBath").html("จำนวนเหรียญ 1 บาท = 0 เหรียญ");
+            $("#showFiveBath").html("จำนวนเหรียญ 5 บาท = 0 เหรียญ")
+            $("#showTenBath").html("จำนวนเหรียญ 10 บาท = 0 เหรียญ")
+            $("#showTotalBath").html("รวมเป็นเงิน 0 บาท");
+            //อันนี้ ฟัก์ชั่น เวลา กด ปุ่ม ล้างจำนวนเหรียญ เพื่อเริ่มนับ เหรียญใหม่
+        }
+        //***
+        //ตรงนี้ คือเวลามี ข้อความมาจาก netpie
+        microgear.on('message', function(topic,data) {
+            if (state == "one" && data != "one") { 
+                oneBath = parseInt(data);
+                state = "";
+                $("#showOneBath").html("จำนวนเหรียญ 1 บาท = "+data+" เหรียญ");
+            }
+                
+            else if (state == "five" && data != "five") {
+                fiveBath = parseInt(data) * 5;
+                state = "";
+                $("#showFiveBath").html("จำนวนเหรียญ 5 บาท = "+data+" เหรียญ")
+            }
+                
+            else if (state == "ten" && data != "ten") {
+                tenBath = parseInt(data) * 10;
+                state = "";
+                $("#showTenBath").html("จำนวนเหรียญ 10 บาท = "+data+" เหรียญ")
+            } else {
+                state = data;
+            }
+            // เงื่อนไขตรงนี้จะเช็คว่า data ที่มาจาก netpie เป็น คำว่าอะไร ตามเงื่อนไขเลย แบ่งเป็น เหรียญ 1 5 10 บาท
+                
+            if (data != "one" || data != "five" || data != "ten"){
+                var total = oneBath + fiveBath + tenBath;
+                $("#showTotalBath").html("รวมเป็นเงิน "+total+" บาท");
+            }
+            
+            // อันนี้จะทำการ จำนวนเงินทั้งหมด แล้วมาแสดงผล
+        });
+        //***
+        //***
+        // อันนี้คือ เมื่อเชื่อมต่อไปที่ netpie แล้ว
+        microgear.on('connected', function() {
+            microgear.setname('coinCountMobile'); //ตั้งชื่อ ตัวแอพว่า coinCountMobile
+            microgear.chat("coinCountESP","V"); // ส่งค่า V ไปที่ netpie ส่งหา coinCountESP
+        });
+        //***
+        //***
+        //เป็นคำสั่ง รีเซต token ไม่แน่ใจการทำงานเท่าไหร่ แต่ในเว็บให้ใส่ ก็เลยใส่ตาม
+        microgear.resettoken(function(err){
+            microgear.connect(APPID);
+        });
+        //***
+    </script>
+</body>
+
+</html>
