@@ -166,6 +166,8 @@
             alert("กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง");
           } else if (numpc[0] != '0') {
             alert("เบอร์โทรศัพต้องขึ้นต้นด้วย 0");
+          } else if (numc.length < 3) {
+            alert("เลขทะเบียนรถต้องมี 3 - 7 ตัว");         
           } else {
               var currentDate = new Date();
               currentDate = currentDate.getTime();
