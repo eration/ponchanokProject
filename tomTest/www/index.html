@@ -369,9 +369,11 @@
          $("#searchCar").listview().listview("refresh");
          $.mobile.changePage("#searchAllCar",{transition: "slide"});
        }
+        var indexEdit;
        function Edit(index){
          $("#editcarid").val(rows[index].id);
          var car_date = new Date(Number(rows[index].car_date));
+           indexEdit = car_date;
          car_date = (car_date.getMonth()+1)+"/"+car_date.getDate()+"/"+car_date.getFullYear();
          $("#editcardate").val(car_date);
          $("#editnamepc").val(rows[index].namepc);
@@ -403,8 +405,7 @@
                    var ccorc = $("#editcorc").val();
                    var cyout = $("#edityout").val();
                    var cnumc = $("#editnumc").val();
-                   var date = new Date(Number(rec.car_date));
-                   date = (car_date.getMonth()+1)+"/"+car_date.getDate()+"/"+car_date.getFullYear();
+                   var date = indexEdit.getTime();
                    var cprice = $("#editprice").val();
                    var cpic1 = $("#editpicUrl1").val();
                    var cpic2 = $("#editpicUrl2").val();
@@ -654,29 +655,29 @@
                         content += "<tr>"+
                             "<td>"+(i+1)+
                             "</td>";
-                        if (rec.assignDate == 0) {
+                        if (rec.assignDate == 1) {
                             content += "<td>มกราคม</td>";
-                        } else if (rec.assignDate == 1) {
+                        } else if (rec.assignDate == 2) {
                             content += "<td>กุมภาพันธ์</td>";
-                        } else if (rec.assignDate ==2 ) {
+                        } else if (rec.assignDate == 3 ) {
                             content += "<td>มีนาคม</td>";
-                        } else if (rec.assignDate == 3) {
-                            content += "<td>เมษายน</td>";
                         } else if (rec.assignDate == 4) {
-                            content += "<td>พฤษภาคม</td>";
+                            content += "<td>เมษายน</td>";
                         } else if (rec.assignDate == 5) {
-                            content += "<td>มิถุนายน</td>";
+                            content += "<td>พฤษภาคม</td>";
                         } else if (rec.assignDate == 6) {
-                            content += "<td>กรกฏาคม</td>";
+                            content += "<td>มิถุนายน</td>";
                         } else if (rec.assignDate == 7) {
-                            content += "<td>สิงหาคม</td>";
+                            content += "<td>กรกฏาคม</td>";
                         } else if (rec.assignDate == 8) {
-                            content += "<td>กันยายน</td>";
+                            content += "<td>สิงหาคม</td>";
                         } else if (rec.assignDate == 9) {
-                            content += "<td>ตุลาคม</td>";
+                            content += "<td>กันยายน</td>";
                         } else if (rec.assignDate == 10) {
-                            content += "<td>พฤศจิกายน</td>";
+                            content += "<td>ตุลาคม</td>";
                         } else if (rec.assignDate == 11) {
+                            content += "<td>พฤศจิกายน</td>";
+                        } else if (rec.assignDate == 12) {
                             content += "<td>ธันวาคม</td>";
                         }
                         var payDateNow = new Date(Number(rec.payDate));
