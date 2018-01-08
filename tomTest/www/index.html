@@ -82,7 +82,7 @@
             var currentDate = new Date();
             var currentTimeStamp = currentDate.getTime();
             var payTimeStamp = payDate.getTime();
-            if (currentTimeStamp >= payTimeStamp) {
+            if (currentTimeStamp >= payTimeStamp && rec.chack != 2) {
               var newPayDate = payTimeStamp + 2592000000 ;
               var sql = "update tbCar set chack = 3 , no_chack = ? , payDate = ? where id = ?";
               var paySql = "insert into tbPay(carId,payDate,assignDate,chack) values (?,?,?,3)";
@@ -360,7 +360,7 @@
            var rec = result.rows.item(i);
            var car_date = new Date(Number(rec.car_date));
            car_date = (car_date.getMonth()+1)+"/"+car_date.getDate()+"/"+car_date.getFullYear();
-           if (rec.chack == 2) {
+           if (rec.chack != 1) {
              searchContent += '<li>' + '<a href = "#">' +'<h3 class = "ui-li-heading">' + car_date + ' ไถ่คืนแล้ว</h3>' + '<p class = "ui-li-desc">' +'ชื่อ'+ rec.namepc + ' เบอร์โทรศัพท์ ' +rec.numpc+' ยี่ห้อ ' +rec.brand + ' รุ่น ' +rec.gen +'<br>'+' สี ' +rec.corc +' เลขทะเบียน ' +rec.numc +' ราคาจำนำ ' +rec.price +' บาท ' +'</p></a>'+'</l>';
            } else {
              searchContent += '<li>' + '<a href = "#" onclick="pay(' + i + ');">' +'<h3 class = "ui-li-heading">' + car_date + '</h3>' + '<p class = "ui-li-desc">' +'ชื่อ'+ rec.namepc + ' เบอร์โทรศัพท์ ' +rec.numpc+' ยี่ห้อ ' +rec.brand + ' รุ่น ' +rec.gen +'<br>'+' สี ' +rec.corc +' เลขทะเบียน ' +rec.numc +' ราคาจำนำ ' +rec.price +' บาท ' +'</p></a>'+'</l>';
