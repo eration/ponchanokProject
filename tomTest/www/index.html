@@ -695,10 +695,10 @@
                         } else if(rec.chack == 2) {
                             content += "<td>จ่ายทั้งต้นและดอก"+"</td>";
                             no_chack = 0;
-                        } else if(rec.chack == 3 && no_chack < 3) {
+                        } else if(rec.chack == 3 && no_chack < 4) {
                             content += "<td>ขาดจ่าย"+"</td>";
                             no_chack += 1;
-                        } else if(rec.chack == 3 && no_chack >= 3) {
+                        } else if(rec.chack == 3 && no_chack >= 4) {
                             content += "<td>ยึดรถ</td>";
                         }
                             content += "</tr>";
