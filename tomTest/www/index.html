@@ -83,7 +83,7 @@
             var currentTimeStamp = currentDate.getTime();
             var payTimeStamp = payDate.getTime();
             if (currentTimeStamp >= payTimeStamp && rec.chack != 2) {
-              var newPayDate = payTimeStamp + 2592000000 ;
+              var newPayDate = payTimeStamp + 2678400000 ;
               var sql = "update tbCar set chack = 3 , no_chack = ? , payDate = ? where id = ?";
               var paySql = "insert into tbPay(carId,payDate,assignDate,chack) values (?,?,?,3)";
               var no_chack = rec.no_chack + 1;
@@ -171,7 +171,7 @@
           } else {
               var currentDate = new Date();
               currentDate = currentDate.getTime();
-              var payDate = currentDate + 2592000000;
+              var payDate = currentDate + 2678400000;
             db.transaction(function(tx){
                 tx.executeSql("INSERT INTO tbCar (namepc, numpc,addpc,pic_url, brand, gen, corc,yout, numc, car_date, price,itotal,pic_url1,pic_url2,pic_url3,pic_url4,pic_url5,payDate) VALUES (?,?,?,?,?,?,?,?, ?, ?,?, ?, ?, ?,?,?,?,? )",[namepc, numpc, addpc,pic,brand, gen, corc, yout, numc, cardate, price,itotal,pic1,pic2,pic3,pic,pic5,payDate],
                 function(tx, result){
@@ -503,7 +503,7 @@
                    var assignDate = new Date(Number(indexUpdatePay.payDate));
                    console.log(indexUpdatePay.payDate);
                 payDate = payDate.getTime();
-                payDate = payDate + 2592000000;
+                payDate = payDate + 2678400000;
                 var newPayDate = new Date(payDate);
 
                 newPayDate = newPayDate.getTime();
