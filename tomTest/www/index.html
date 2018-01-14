@@ -82,12 +82,15 @@
             var currentDate = new Date();
             var currentTimeStamp = currentDate.getTime();
             var payTimeStamp = payDate.getTime();
-            if (currentTimeStamp >= payTimeStamp && rec.chack != 2) {
+            var _chack = 3;
+            if (currentTimeStamp >= payTimeStamp && rec.chack != 2 && no_chack < 5) {
               var newPayDate = payTimeStamp + 2678400000 ;
-              var sql = "update tbCar set chack = 3 , no_chack = ? , payDate = ? where id = ?";
-              var paySql = "insert into tbPay(carId,payDate,assignDate,chack) values (?,?,?,3)";
               var no_chack = rec.no_chack + 1;
-              tx.executeSql(paySql,[rec.id,currentTimeStamp,(payDate.getMonth()+1)]);
+              if (no_chack == 4) newPayDate = payTimeStamp + 86400000;
+              else if (no_chack == 5) _chack = 4;
+              var sql = "update tbCar set chack = 3 , no_chack = ? , payDate = ? where id = ?";
+              var paySql = "insert into tbPay(carId,payDate,assignDate,chack) values (?,?,?,?)";
+              tx.executeSql(paySql,[rec.id,currentTimeStamp,(payDate.getMonth()+1),_chack]);
               tx.executeSql(sql,[no_chack,newPayDate,rec.id],function(){
                 console.log("numc : " + rec.numc + " ขาดจ่าย");
               },function(){
@@ -515,6 +518,7 @@
                   var no_chack = indexUpdatePay.no_chack + 1;
                   sql = "UPDATE tbCar SET chack = ? , no_chack = ? , payDate = ? WHERE numc = ?";
                   inputSql = [chack,no_chack,newPayDate,indexUpdatePay.numc];
+                  if (no_chack == 4) chack = 4;
                 } else {
                   sql = "UPDATE tbCar SET chack = ? , no_chack = 0 , payDate = ? WHERE numc = ?";
                   inputSql = [chack,newPayDate,indexUpdatePay.numc];
@@ -695,10 +699,10 @@
                         } else if(rec.chack == 2) {
                             content += "<td>จ่ายทั้งต้นและดอก"+"</td>";
                             no_chack = 0;
-                        } else if(rec.chack == 3 && no_chack < 3) {
+                        } else if(rec.chack == 3 && no_chack < 4) {
                             content += "<td>ขาดจ่าย"+"</td>";
                             no_chack += 1;
-                        } else if(rec.chack == 3 && no_chack >= 3) {
+                        } else if(rec.chack == 4) {
                             content += "<td>ยึดรถ</td>";
                         }
                             content += "</tr>";
