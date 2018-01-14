@@ -31,7 +31,7 @@
         console.log("create Table");
       }
       function createTable(tx){
-//        tx.executeSql("DROP TABLE IF EXISTS tbCar");
+       // tx.executeSql("DROP TABLE IF EXISTS tbCar");
          var sql = "CREATE TABLE IF NOT EXISTS tbCar (" +
              "id INTEGER PRIMARY KEY AUTOINCREMENT," +
              "namepc VARCHAR(50), " +
@@ -83,9 +83,12 @@
             var currentTimeStamp = currentDate.getTime();
             var payTimeStamp = payDate.getTime();
             var _chack = 3;
-            if (currentTimeStamp >= payTimeStamp && rec.chack != 2 && no_chack < 5) {
+            console.log(currentTimeStamp);
+            console.log(payTimeStamp);
+            var no_chack = rec.no_chack + 1;
+            if (currentTimeStamp >= payTimeStamp && rec.chack != 2 && no_chack <= 5) {
               var newPayDate = payTimeStamp + 2678400000 ;
-              var no_chack = rec.no_chack + 1;
+              console.log(no_chack);
               if (no_chack == 4) newPayDate = payTimeStamp + 86400000;
               else if (no_chack == 5) _chack = 4;
               var sql = "update tbCar set chack = 3 , no_chack = ? , payDate = ? where id = ?";
