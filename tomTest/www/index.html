@@ -518,7 +518,6 @@
                   var no_chack = indexUpdatePay.no_chack + 1;
                   sql = "UPDATE tbCar SET chack = ? , no_chack = ? , payDate = ? WHERE numc = ?";
                   inputSql = [chack,no_chack,newPayDate,indexUpdatePay.numc];
-                  if (no_chack == 4) chack = 4;
                 } else {
                   sql = "UPDATE tbCar SET chack = ? , no_chack = 0 , payDate = ? WHERE numc = ?";
                   inputSql = [chack,newPayDate,indexUpdatePay.numc];
@@ -534,6 +533,11 @@
                     tx.executeSql(paySql,inputPaySql,function(){
                         console.log("paySql");
                     });
+                    if (no_chack == 4) {
+                      tx.executeSql(paySql,[indexUpdatePay.id,currentDate,(assignDate.getMonth()+1),4],function(){
+                          console.log("paySql");
+                      });
+                    }
                 },_onError);
                }
 
@@ -699,13 +703,14 @@
                         } else if(rec.chack == 2) {
                             content += "<td>จ่ายทั้งต้นและดอก"+"</td>";
                             no_chack = 0;
-                        } else if(rec.chack == 3 && no_chack < 4) {
+                        } else if(rec.chack == 3) {
                             content += "<td>ขาดจ่าย"+"</td>";
                             no_chack += 1;
                         } else if(rec.chack == 4) {
                             content += "<td>ยึดรถ</td>";
                         }
                             content += "</tr>";
+                            console.log(rec.chack);
                     }
                     $("#bodyShowPay").html(content);
                     $.mobile.changePage("#showPayTable");
