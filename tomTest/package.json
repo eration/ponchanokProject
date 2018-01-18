@@ -1,0 +1,13 @@
+{
+  "name": "comsci.project.tom",
+  "version": "1.0.0",
+  "displayName": "the garage",
+  "cordova": {
+    "platforms": [
+      "android"
+    ]
+  },
+  "dependencies": {
+    "cordova-android": "~5.1.1"
+  }
+}
