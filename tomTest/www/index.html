@@ -115,7 +115,7 @@
         console.log("Create table Success");
       }
 
-      function uploadPhoto(imageURI) {
+      function uploadPhoto(imageURI) { 
           $(picInput).val(imageURI);
       }
       var picInput;
@@ -487,11 +487,11 @@
                    } else {
                     $("#schack").val("ยังไม่มีการชำระเงิน");
                    }
-                   $("#spicUrl1").attr("src","data:image/jpeg;base64,"+rows[index].pic_url1);
-                   $("#spicUrl2").attr("src","data:image/jpeg;base64,"+rows[index].pic_url2);
-                   $("#spicUrl3").attr("src","data:image/jpeg;base64,"+rows[index].pic_url3);
-                   $("#spicUrl4").attr("src","data:image/jpeg;base64,"+rows[index].pic_url4);
-                   $("#spicUrl5").attr("src","data:image/jpeg;base64,"+rows[index].pic_url5);
+                   $("#spicUrl1").attr("src",rows[index].pic_url1);
+                   $("#spicUrl2").attr("src",rows[index].pic_url2);
+                   $("#spicUrl3").attr("src",rows[index].pic_url3);
+                   $("#spicUrl4").attr("src",rows[index].pic_url4);
+                   $("#spicUrl5").attr("src",rows[index].pic_url5);
                    $.mobile.changePage("#pcar");
                }
                function puser(index){
@@ -499,7 +499,7 @@
                    $("#snamePC").val(rows[index].namepc);
                    $("#snumpc").val(rows[index].numpc);
                    $("#saddpc").val(rows[index].addpc);
-                   $("#spicUrl").attr("src","data:image/jpeg;base64,"+rows[index].pic_url);
+                   $("#spicUrl").attr("src",rows[index].pic_url);
                    $.mobile.changePage("#puser");
                }
                var indexUpdatePay;
