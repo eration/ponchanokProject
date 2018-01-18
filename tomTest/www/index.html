@@ -115,7 +115,8 @@
         console.log("Create table Success");
       }
 
-      function uploadPhoto(imageURI) { 
+      function uploadPhoto(imageURI) {
+        console.log(imageURI);
           $(picInput).val(imageURI);
       }
       var picInput;
@@ -126,7 +127,7 @@
         },  {
           quality: 50,
           sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY,
-          destinationType: navigator.camera.DestinationType.FILE_URI
+          destinationType: navigator.camera.DestinationType.DATA_URL
         });
       }
 
