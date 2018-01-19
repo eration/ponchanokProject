@@ -27,15 +27,11 @@
       function onDeviceReady() {
         db = window.openDatabase("TheGarage", "1.0", "Daily The Garage", (1024*1024)*100);
         console.log("create DB");
-        db.transaction(createTable, function(tx){
-          alert("drop table");
-          tx.executeSql("DROP TABLE IF EXISTS tbCar");
-          tx.executeSql("DROP TABLE IF EXISTS tbPay");
-        }, _onSuccess);
+        db.transaction(createTable, _onError, _onSuccess);
         console.log("create Table");
       }
       function createTable(tx){
-
+       tx.executeSql("DROP TABLE IF EXISTS tbCar");
          var sql = "CREATE TABLE IF NOT EXISTS tbCar (" +
              "id INTEGER PRIMARY KEY AUTOINCREMENT," +
              "namepc VARCHAR(50), " +
@@ -65,7 +61,7 @@
       }
 
         function createPayTable(tx){
-
+          tx.executeSql("DROP TABLE IF EXISTS tbPay");
             var sql = "CREATE TABLE IF NOT EXISTS tbPay ("+
                 "id integer primary key autoincrement," +
                 "carId integer,"+
