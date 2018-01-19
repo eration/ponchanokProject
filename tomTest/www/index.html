@@ -116,8 +116,8 @@
       }
 
       function uploadPhoto(imageURI) {
-        console.log(imageURI);
-          $(picInput).val(imageURI);
+        $(picInput).val(imageURI);
+        $("#showPicAfterSelected").attr("src",imageURI);
       }
       var picInput;
       function browsePhoto(picUrl) {
@@ -818,6 +818,7 @@
                     <a href="#" onclick="browsePhoto('#picUrl');" data-role="button">Select Photo</a>
                 </div>
             </div>
+            <img src="" alt="" id="showPicAfterSelected">
              <center><label>ข้อมูลรถ</label></center>
              <label>ยี่ห้อรถ</label>
              <input name="brand" id="brand" type="text" placeholder="กรุณาระบุยี่ห้อของรถ" onkeyup="checkChar(this);">
