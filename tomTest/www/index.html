@@ -31,7 +31,7 @@
         console.log("create Table");
       }
       function createTable(tx){
-       tx.executeSql("DROP TABLE IF EXISTS tbCar");
+       // tx.executeSql("DROP TABLE IF EXISTS tbCar");
          var sql = "CREATE TABLE IF NOT EXISTS tbCar (" +
              "id INTEGER PRIMARY KEY AUTOINCREMENT," +
              "namepc VARCHAR(50), " +
@@ -61,7 +61,7 @@
       }
 
         function createPayTable(tx){
-          tx.executeSql("DROP TABLE IF EXISTS tbPay");
+          // tx.executeSql("DROP TABLE IF EXISTS tbPay");
             var sql = "CREATE TABLE IF NOT EXISTS tbPay ("+
                 "id integer primary key autoincrement," +
                 "carId integer,"+
