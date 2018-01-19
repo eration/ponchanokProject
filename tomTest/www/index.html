@@ -25,19 +25,23 @@
       document.addEventListener("deviceready", onDeviceReady, false);
 
       function onDeviceReady() {
-        db = window.openDatabase("TheGarage", "1.0", "Daily The Garage", 1024*1024);
+        db = window.openDatabase("TheGarage", "1.0", "Daily The Garage", (1024*1024)*100);
         console.log("create DB");
-        db.transaction(createTable, _onError, _onSuccess);
+        db.transaction(createTable, function(tx){
+          alert("drop table");
+          tx.executeSql("DROP TABLE IF EXISTS tbCar");
+          tx.executeSql("DROP TABLE IF EXISTS tbPay");
+        }, _onSuccess);
         console.log("create Table");
       }
       function createTable(tx){
-       // tx.executeSql("DROP TABLE IF EXISTS tbCar");
+
          var sql = "CREATE TABLE IF NOT EXISTS tbCar (" +
              "id INTEGER PRIMARY KEY AUTOINCREMENT," +
              "namepc VARCHAR(50), " +
              "numpc VARCHAR(10), "+
              "addpc VARCHAR(50), "+
-             "pic_url VARCHAR(100),"+
+             "pic_url TEXT,"+
              "brand VARCHAR(10), " +
              "gen VARCHAR(10), " +
              "corc VARCHAR(10), " +
@@ -47,11 +51,11 @@
              "price INTEGER," +
              "itotal INTEGER," +
              "chack VARCHAR(1)," +
-             "pic_url1 VARCHAR(100),"+
-             "pic_url2 VARCHAR(100),"+
-             "pic_url3 VARCHAR(100),"+
-             "pic_url4 VARCHAR(100),"+
-             "pic_url5 VARCHAR(100),"+
+             "pic_url1 TEXT,"+
+             "pic_url2 TEXT,"+
+             "pic_url3 TEXT,"+
+             "pic_url4 TEXT,"+
+             "pic_url5 TEXT,"+
              "no_chack INTEGER,"+
              "payDate varchar(100)"+
              ")";
@@ -61,7 +65,7 @@
       }
 
         function createPayTable(tx){
-          // tx.executeSql("DROP TABLE IF EXISTS tbPay");
+
             var sql = "CREATE TABLE IF NOT EXISTS tbPay ("+
                 "id integer primary key autoincrement," +
                 "carId integer,"+
@@ -116,30 +120,7 @@
       }
 
       function uploadPhoto(imageURI) {
-        // $(picInput).val(imageURI);
-        $("#showPicAfterSelected").attr("src",imageURI);
-        var d = new Date(),
-         n = d.getTime(),
-         newFileName = n + ".jpg";
-        window.FilePath.resolveNativePath(imageURI, function(entry) {
-             window.resolveLocalFileSystemURL(entry, success, fail);
-
-             function fail(e) {
-                 console.error('Error: ', e);
-             }
-
-             function success(fileEntry) {
-                 var namePath = fileEntry.nativeURL.substr(0, fileEntry.nativeURL.lastIndexOf('/') + 1);
-                 // Only copy because of access rights
-                 $cordovaFile.copyFile(namePath, fileEntry.name, cordova.file.dataDirectory, newFileName).then(function(success) {
-                    $(pinInput).val(fileEntry.nativeURL);
-                 }, function(error) {
-                     $scope.showAlert('Error', error.exception);
-                 });
-                 console.log(fileEntry.nativeURL);
-
-             };
-         });
+          $(picInput).val(imageURI);
       }
       var picInput;
       function browsePhoto(picUrl) {
@@ -149,7 +130,7 @@
         },  {
           quality: 50,
           sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY,
-          destinationType: navigator.camera.DestinationType.FILE_URI
+          destinationType: navigator.camera.DestinationType.DATA_URL
         });
       }
 
@@ -510,11 +491,11 @@
                    } else {
                     $("#schack").val("ยังไม่มีการชำระเงิน");
                    }
-                   $("#spicUrl1").attr("src",rows[index].pic_url1);
-                   $("#spicUrl2").attr("src",rows[index].pic_url2);
-                   $("#spicUrl3").attr("src",rows[index].pic_url3);
-                   $("#spicUrl4").attr("src",rows[index].pic_url4);
-                   $("#spicUrl5").attr("src",rows[index].pic_url5);
+                   $("#spicUrl1").attr("src","data:image/jpeg;base64," + rows[index].pic_url1);
+                   $("#spicUrl2").attr("src","data:image/jpeg;base64," + rows[index].pic_url2);
+                   $("#spicUrl3").attr("src","data:image/jpeg;base64," + rows[index].pic_url3);
+                   $("#spicUrl4").attr("src","data:image/jpeg;base64," + rows[index].pic_url4);
+                   $("#spicUrl5").attr("src","data:image/jpeg;base64," + rows[index].pic_url5);
                    $.mobile.changePage("#pcar");
                }
                function puser(index){
@@ -522,7 +503,7 @@
                    $("#snamePC").val(rows[index].namepc);
                    $("#snumpc").val(rows[index].numpc);
                    $("#saddpc").val(rows[index].addpc);
-                   $("#spicUrl").attr("src",rows[index].pic_url);
+                   $("#spicUrl").attr("src","data:image/jpeg;base64," + rows[index].pic_url);
                    $.mobile.changePage("#puser");
                }
                var indexUpdatePay;
@@ -840,7 +821,6 @@
                     <a href="#" onclick="browsePhoto('#picUrl');" data-role="button">Select Photo</a>
                 </div>
             </div>
-            <img src="" alt="" id="showPicAfterSelected">
              <center><label>ข้อมูลรถ</label></center>
              <label>ยี่ห้อรถ</label>
              <input name="brand" id="brand" type="text" placeholder="กรุณาระบุยี่ห้อของรถ" onkeyup="checkChar(this);">
