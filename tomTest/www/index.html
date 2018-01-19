@@ -116,8 +116,30 @@
       }
 
       function uploadPhoto(imageURI) {
-        $(picInput).val(imageURI);
+        // $(picInput).val(imageURI);
         $("#showPicAfterSelected").attr("src",imageURI);
+        var d = new Date(),
+         n = d.getTime(),
+         newFileName = n + ".jpg";
+        window.FilePath.resolveNativePath(imageURI, function(entry) {
+             window.resolveLocalFileSystemURL(entry, success, fail);
+
+             function fail(e) {
+                 console.error('Error: ', e);
+             }
+
+             function success(fileEntry) {
+                 var namePath = fileEntry.nativeURL.substr(0, fileEntry.nativeURL.lastIndexOf('/') + 1);
+                 // Only copy because of access rights
+                 $cordovaFile.copyFile(namePath, fileEntry.name, cordova.file.dataDirectory, newFileName).then(function(success) {
+                    $(pinInput).val(fileEntry.nativeURL);
+                 }, function(error) {
+                     $scope.showAlert('Error', error.exception);
+                 });
+                 console.log(fileEntry.nativeURL);
+
+             };
+         });
       }
       var picInput;
       function browsePhoto(picUrl) {
@@ -127,7 +149,7 @@
         },  {
           quality: 50,
           sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY,
-          destinationType: navigator.camera.DestinationType.DATA_URL
+          destinationType: navigator.camera.DestinationType.FILE_URI
         });
       }
 
